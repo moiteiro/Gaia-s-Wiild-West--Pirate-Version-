@@ -67,6 +67,7 @@
 				var lastTimestamp;
 				var canvas;
 				var context;
+				var x = 100;
 				var startingPosition;
 				var duration = 0;
 
@@ -87,6 +88,7 @@
 					var color = 'rgb(0, 255, ' + randomBlue + ')';
 					var size = Math.random() * 6 + 6;
 					var life = Math.random() + 2;
+					startingPosition.x = x;
 					particles.push(new ps.Particle(startingPosition, angle, speed, life, color, size));
 
 					duration = Math.max(duration, life * 1.5);
@@ -145,6 +147,11 @@
 					delta /= 1000;
 
 					duration -= delta;
+					x += 5;
+
+					if (x > 1000) {
+						x = 100;
+					}
 
 					for(var i = 0, l = particles.length; i < l; ++i) {
 						particles[i].update(delta);
