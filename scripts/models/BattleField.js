@@ -82,6 +82,7 @@ var BattleField = klass({
 	    	dy += tileSize;
 		}
 
+		this.createMapBounds();
 		context.restore();
 
 		this.placeResources();
@@ -143,6 +144,37 @@ var BattleField = klass({
 	},
 
 	/**
+	 * Creates a subsoil bounds
+	 * @return void
+	 */
+	createMapBounds: function () {
+		var i;
+		var x = this.tileSize * this.width;
+		var y = this.tileSize * this.height;
+		var h = this.tileSize;
+
+		this.context.fillStyle = 'black';
+
+		for ( i = 0; i < this.width; i ++) {
+			this.context.moveTo(x - (i * h), y);
+			this.context.lineTo(x  - ((i - 1) * h) ,y  + h);
+			this.context.lineTo(x - (i * h) ,y  + h);
+			this.context.lineTo(x  - ((i + 1) * h), y);
+			this.context.lineTo(x  - (i * h) , y);
+		}
+		this.context.stroke();
+
+		for ( i = 0; i < this.height; i ++) {
+			this.context.moveTo(x  , y - (i * h));
+			this.context.lineTo(x + h ,y - ((i - 1) * h));
+			this.context.lineTo(x + h ,y - (i * h));
+			this.context.lineTo(x , y - ((i + 1) * h));
+			this.context.lineTo(x  , y - (i * h));
+		}
+		this.context.stroke();
+	},
+
+	/**
 	 * Defines tiles that can be walkable for characters.
 	 * @return {integer} total of walkable tiles.
 	 */
@@ -190,7 +222,6 @@ var BattleField = klass({
 
 		return tiles;
 	},
-
 
 	/**
 	 * Returns a position that has three neighbor tiles with type = 1
