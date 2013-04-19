@@ -152,25 +152,27 @@ var BattleField = klass({
 		var x = this.tileSize * this.width;
 		var y = this.tileSize * this.height;
 		var h = this.tileSize;
+		var halfH = h / 2;
 
-		this.context.fillStyle = 'black';
+		this.context.fillStyle = '#986532';
 
-		for ( i = 0; i < this.width; i ++) {
+		for ( i = 0; i < this.width; i++) {
 			this.context.moveTo(x - (i * h), y);
-			this.context.lineTo(x  - ((i - 1) * h) ,y  + h);
-			this.context.lineTo(x - (i * h) ,y  + h);
+			this.context.lineTo(x  - ((i - 1) * h / 2) - (i * halfH) ,y  + halfH);
+			this.context.lineTo(x - (i * halfH) - ((i + 1) * halfH),y  + halfH);
 			this.context.lineTo(x  - ((i + 1) * h), y);
 			this.context.lineTo(x  - (i * h) , y);
 		}
-		this.context.stroke();
 
 		for ( i = 0; i < this.height; i ++) {
 			this.context.moveTo(x  , y - (i * h));
-			this.context.lineTo(x + h ,y - ((i - 1) * h));
-			this.context.lineTo(x + h ,y - (i * h));
+			this.context.lineTo(x + h / 2 ,y - ((i - 1) * h + halfH ));
+			this.context.lineTo(x + h - halfH,y - (i * h) - halfH);
 			this.context.lineTo(x , y - ((i + 1) * h));
 			this.context.lineTo(x  , y - (i * h));
 		}
+		
+		this.context.fill();
 		this.context.stroke();
 	},
 
