@@ -10,11 +10,15 @@ var Resource = klass({
 		name: "savanna", 			// documentar todos os tipos de biomas
 		nonWalkable: ['rock', 'rock1','tree'],
 		walkable: [],
+		terrain: ['grass1'],
 		amount: 20  				// total of resource that composes this environment
 	},
 
 	path: "",
-	resources: [],
+	nonWalkableElems: [],
+	walkableElems: [],
+	terrainElems: [],
+	elems: [],
 	
 	totalResources: 0,
 	totalResourcesLoaded: 0,
@@ -30,24 +34,30 @@ var Resource = klass({
 	},
 
 	loadAllResources: function () {
-		var nonWalkable = this.resourcesType.nonWalkable,
-			walkable 	= this.resourcesType.walkable,
+		var nonWalkable  	 = this.resourcesType.nonWalkable,
+			walkable         = this.resourcesType.walkable,
+			terrain          = this.resourcesType.terrain,
 			length,
 			i;
 
 		length = nonWalkable.length;
 
 		for (i = 0; i < length ; i++) {
-			this.loadResource(nonWalkable[i]);
+			this.loadResource(nonWalkable[i], "nonWalkableElems");
 		}
 		
 		length = walkable.length;		
 		for (i = 0; i < length ; i++) {
-			this.loadResource(walkable[i]);
+			this.loadResource(walkable[i], "walkableElems");
+		}
+
+		length = terrain.length;		
+		for (i = 0; i < length ; i++) {
+			this.loadResource(terrain[i], "terrainElems");
 		}
 	},
 
-	loadResource: function(name) {
+	loadResource: function(name, elemsArray) {
 		var image = new Image();
 		var callback = this.resourceLoaded;
 			
@@ -60,14 +70,15 @@ var Resource = klass({
 		};
 
 		image.src = this.path + name + ".png";
-		this.resources[name] = image;
+		this.elems[name] = image;
+		this[elemsArray][name] = image;
 	},
 
 	resourceLoaded: function(callback) {
 
 		this.totalResourcesLoaded++;
-		if (this.totalResources === this.totalResourcesLoaded) {
 
+		if (this.totalResources === this.totalResourcesLoaded) {
 			if (callback) {
 				callback();
 			}

@@ -30,7 +30,6 @@ var BattleField = klass({
 		}
 
 		this.generateArena();
-
 	},
 
 	render: function () {
@@ -60,13 +59,13 @@ var BattleField = klass({
 				titlesCount++;
 				context.strokeRect(dx, dy, tileSize, tileSize);
 
-				if (this.map[y][x].type === 1) {
-					context.fillStyle = "#989836"; //grass
-				} else if (this.map[y][x].type === 5) {
-					context.fillStyle = "rgba(155, 0, 0, 0.8)";
-				} else if (this.map[y][x].type === 6) {
-					context.fillStyle = "rgba(255, 0, 0, 0.4)";
-				}
+				// if (this.map[y][x].type === 1) {
+				// 	context.fillStyle = "#989836"; //grass
+				// } else if (this.map[y][x].type === 5) {
+				// 	context.fillStyle = "rgba(155, 0, 0, 0.8)";
+				// } else if (this.map[y][x].type === 6) {
+				// 	context.fillStyle = "rgba(255, 0, 0, 0.4)";
+				// }
 				
 				context.fillRect(dx,dy,tileSize,tileSize);
 
@@ -85,8 +84,8 @@ var BattleField = klass({
 		this.createMapBounds();
 		context.restore();
 
-		this.placeResources();
-		
+		this.placeTerrain();
+		this.placeResources();		
 	},
 
 	generateArena: function () {
@@ -112,7 +111,7 @@ var BattleField = klass({
 		this.setNonWalkableTiles();
 	},
 
-	createMapDimensions: function() {
+	createMapDimensions: function () {
 
 		var maxSize = this.maxSize, // map max size
 			minSize = this.minSize, // map min size
@@ -171,7 +170,7 @@ var BattleField = klass({
 			this.context.lineTo(x , y - ((i + 1) * h));
 			this.context.lineTo(x  , y - (i * h));
 		}
-		
+
 		this.context.fill();
 		this.context.stroke();
 	},
@@ -279,7 +278,6 @@ var BattleField = klass({
 		}
 	},
 
-
 	/**
 	 * Sets tiles that characters cannot walk.
 	 * This tiles can be used to place Resources.
@@ -342,7 +340,7 @@ var BattleField = klass({
 
 		var objects = this.objects,
 			context = this.context,
-			resources = this.resources.resources,
+			resources = this.resources.elems,
 			objectsAmount = objects.length,
 			image,
 			pos,
@@ -353,5 +351,25 @@ var BattleField = klass({
 			image = resources[objects[i].name];
 			context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 16 );
 		}
+	},
+
+	placeTerrain: function() {
+
+		var context = this.context,
+			width = this.width,
+			height = this.height,
+			image,
+			pos,
+			x, 
+			y;
+
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				pos = this.map[y][x].findTileCenter(this.dx,this.dy);
+				image = this.resources.terrainElems.grass1;
+				context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 32 );
+			}
+		}
+
 	}
 });
