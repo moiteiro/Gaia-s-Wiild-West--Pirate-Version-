@@ -5,15 +5,15 @@ var Tile = klass({
 	scaledTileSize: 0,
 	x: 0,					// integer that represents x position em battlefield map array.
 	y: 0,					// integer that represents y position em battlefield map array.
-	type: null,
-	cx: null,
-	cy: null,
-	centerX: null,
-	centerY: null,
-	width: null,
-	height: null,
-
-	resource: null,		// stores an image that will be render in this tile
+	type: '',
+	cx: '',
+	cy: '',
+	centerX: '',
+	centerY: '',
+	width: '',
+	height: '',
+	texture: '',		// stores index of textures list
+	resource: '',		// stores an image that will be render in this tile
 
 	initialize: function (configs) {
 		var pos;
