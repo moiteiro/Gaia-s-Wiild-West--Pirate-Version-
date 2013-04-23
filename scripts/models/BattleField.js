@@ -58,7 +58,8 @@ var BattleField = klass({
 	    	for (x = 0; x < width; x++) {
 	        	
 				titlesCount++;
-				context.globalAlpha = 0.3;
+				context.globalAlpha = 0.15;
+				context.lineWidth = 3;
 				context.strokeRect(dx, dy, tileSize, tileSize);
 
 				// context.globalAlpha = 1;
@@ -73,6 +74,7 @@ var BattleField = klass({
 		}
 
 		context.globalAlpha = 1;
+		context.lineWidth = 1;
 
 		this.createMapBounds();
 		context.restore();
