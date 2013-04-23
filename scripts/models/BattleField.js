@@ -46,6 +46,7 @@ var BattleField = klass({
 			titlesCount = 0;
 
 
+		this.placeTerrain();
 		context.globalAlpha = 1;
 		context.save();
 		context.translate(this.dx, this.dy);
@@ -57,23 +58,13 @@ var BattleField = klass({
 	    	for (x = 0; x < width; x++) {
 	        	
 				titlesCount++;
+				context.globalAlpha = 0.3;
 				context.strokeRect(dx, dy, tileSize, tileSize);
 
-				// if (this.map[y][x].type === 1) {
-				// 	context.fillStyle = "#989836"; //grass
-				// } else if (this.map[y][x].type === 5) {
-				// 	context.fillStyle = "rgba(155, 0, 0, 0.8)";
-				// } else if (this.map[y][x].type === 6) {
-				// 	context.fillStyle = "rgba(255, 0, 0, 0.4)";
-				// }
-				
-				context.fillRect(dx,dy,tileSize,tileSize);
-
-
-				context.globalAlpha = 1;
-				context.fillStyle = "black";
-				context.font = "normal 14px helvetica";
-				context.fillText("(" + x + "," + y + ")", (dx + tileSize/2) - 12, dy + tileSize/2);
+				// context.globalAlpha = 1;
+				// context.fillStyle = "black";
+				// context.font = "normal 14px helvetica";
+				// context.fillText("(" + x + "," + y + ")", (dx + tileSize/2) - 12, dy + tileSize/2);
 				
 				dx += tileSize;
 	    	}
@@ -81,10 +72,10 @@ var BattleField = klass({
 	    	dy += tileSize;
 		}
 
+		context.globalAlpha = 1;
+
 		this.createMapBounds();
 		context.restore();
-
-		this.placeTerrain();
 		this.placeResources();		
 	},
 
@@ -116,6 +107,7 @@ var BattleField = klass({
 		var maxSize = this.maxSize, // map max size
 			minSize = this.minSize, // map min size
 			terrain = this.resources.terrainElems,
+			terrainLength = this.resources.resourcesType.terrain.length,
 			terrainType,
 			y, x;
 			
@@ -127,7 +119,7 @@ var BattleField = klass({
 		for (y = this.height - 1; y >= 0; y--) {
 			this.map[y] = new Array(this.height);
 			for (x = this.width - 1; x >= 0; x--) {
-				terrainType = Math.floor(Math.random() * terrain.length);
+				terrainType = Math.floor(Math.random() * terrainLength);
 				this.map[y][x] = new Tile({
 					x:x, 
 					y:y, 
@@ -374,7 +366,7 @@ var BattleField = klass({
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
 				tile = map[y][x];
-				pos = tile.findTileCenter(this.dx,this.dy);				
+				pos = tile.findTileCenter(this.dx,this.dy);
 				image = terrains[terrainNames[tile.terrain]];
 				context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 32 );
 			}
