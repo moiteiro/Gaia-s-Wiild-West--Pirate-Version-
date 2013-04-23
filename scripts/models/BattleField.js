@@ -115,6 +115,8 @@ var BattleField = klass({
 
 		var maxSize = this.maxSize, // map max size
 			minSize = this.minSize, // map min size
+			terrain = this.resources.terrainElems,
+			terrainType,
 			y, x;
 			
 		this.width = Math.floor(Math.random() * (maxSize - minSize + 1) + minSize);
@@ -125,10 +127,12 @@ var BattleField = klass({
 		for (y = this.height - 1; y >= 0; y--) {
 			this.map[y] = new Array(this.height);
 			for (x = this.width - 1; x >= 0; x--) {
+				terrainType = Math.floor(Math.random() * terrain.length);
 				this.map[y][x] = new Tile({
 					x:x, 
 					y:y, 
 					type:0,
+					terrain: terrainType,
 					scaledTileSize: this.scaledTileSize
 				});
 			}
@@ -356,8 +360,12 @@ var BattleField = klass({
 	placeTerrain: function() {
 
 		var context = this.context,
+			terrainNames = this.resources.resourcesType.terrain,
+			terrains = this.resources.terrainElems,
 			width = this.width,
 			height = this.height,
+			map = this.map,
+			tile,
 			image,
 			pos,
 			x, 
@@ -365,8 +373,9 @@ var BattleField = klass({
 
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
-				pos = this.map[y][x].findTileCenter(this.dx,this.dy);
-				image = this.resources.terrainElems.grass1;
+				tile = map[y][x];
+				pos = tile.findTileCenter(this.dx,this.dy);				
+				image = terrains[terrainNames[tile.terrain]];
 				context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 32 );
 			}
 		}
