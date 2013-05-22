@@ -3,18 +3,21 @@
 */
 
 var GWW = klass({
-	name: "Gaia's Wild West",
+	name: "Gaia's Wild West (pirate version)",
 	version: '0.0.0',
 	canvas: '',
 	context: '',
 
 	screenWidth: 0,
 	screenHeight: 0,
-	msPerFrame: 16,
 	tileSize: 90,           // size of each square
 	scaledTileSize: 63.639, // size of tile after the scale operation
+	loopFrameCount: 0,
+	totalFrames: 0,
+	msPerFrame: 16,
 
-	HUD:null,
+	HUD: null,
+	debugHUD: null,
 	progression: null,
 	battleField: null,
 	resources: null,
@@ -28,7 +31,13 @@ var GWW = klass({
 			Object.extend(this, configs);
 		}
 
+		utils.addListener(window, 'resize', Screen.doResize);
+		// utils.addListener(document, 'click', Controls.clickHandler);
 		this.setFullScreen();
+
+		jQuery.getJSON('server-side-map.json', function() {
+			
+		});
 
 		this.resources = new Resource({
 			path: "assets/nature/savanna/",
@@ -48,6 +57,7 @@ var GWW = klass({
 		});
 	},
 
+	/* move to screen object*/
 	setFullScreen: function () {
 		this.screenWidth = this.canvas.width = this.canvas.parentNode.clientWidth;
 		this.screenHeight = this.canvas.height = this.canvas.parentNode.clientHeight;
@@ -62,7 +72,6 @@ var GWW = klass({
 
 		this.battleField.render();
 	}
-
 });
 
 var gww = new GWW();
@@ -78,13 +87,14 @@ var gww = new GWW();
 	var acDelta = 0;
 	var msPerFrame = gww.msPerFrame;
 
-	function render () {
+	function render() {
 		requestAnimFrame(render);
 
 		var delta = Date.now() - lastUpdateTime;
 		if (acDelta > msPerFrame) {
 			acDelta = 0;
 			gww.render();
+			gww.totalFrames++;
 		} else {
 			acDelta += delta;
 		}
@@ -92,5 +102,6 @@ var gww = new GWW();
 		lastUpdateTime = Date.now();
 	}
 
-	render();
+	// render();
+	gww.render();
 }(gww));
