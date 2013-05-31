@@ -1,5 +1,5 @@
 /*global window, document, klass, requestAnimFrame, $,
-	BattleField, Resource
+	BattleField, Resource, Controls, GameController
 */
 
 var GWW = klass({
@@ -16,12 +16,15 @@ var GWW = klass({
 	totalFrames: 0,
 	msPerFrame: 16,
 
-	HUD: null,
-	debugHUD: null,
-	progression: null,
-	battleField: null,
-	resources: null,
-	map: null,
+	gameController: "",
+	controls: "",
+	HUD: "",
+	debugHUD: "",
+	progression: "",
+	battleField: "",
+	resources: "",
+	map: "",
+
 
 	initialize: function (configs) {
 		this.canvas = $('canvas');
@@ -31,12 +34,18 @@ var GWW = klass({
 			Object.extend(this, configs);
 		}
 
-		utils.addListener(window, 'resize', Screen.doResize);
-		// utils.addListener(document, 'click', Controls.clickHandler);
+		// mover para dentro de Screen
+		// utils.addListener(window, 'resize', Screen.doResize);
 		this.setFullScreen();
 
-		jQuery.getJSON('server-side-map.json', function() {
-			
+		this.gameController = new GameController();
+		this.gameController.setState('BATTLE_NEW');
+		this._states = this.gameController.getAllStates();
+
+		this.controls = new Controls({
+			canvas: this.canvas,
+			tileSize: this.tileSize,
+			scaledTileSize: this.scaledTileSize
 		});
 
 		this.resources = new Resource({
@@ -46,7 +55,6 @@ var GWW = klass({
 		});
 
 		// implementar algum tipo de load bar para esperar que todos os resources seja carregados.
-
 		this.battleField = new BattleField({
 			resources: this.resources,
 			context: this.context,
@@ -55,6 +63,8 @@ var GWW = klass({
 			scaledTileSize: this.scaledTileSize,
 			tileSize: this.tileSize
 		});
+
+		this.controls.setBattleFieldAttributes(this.battleField.getAttributes());
 	},
 
 	/* move to screen object*/
@@ -63,19 +73,43 @@ var GWW = klass({
 		this.screenHeight = this.canvas.height = this.canvas.parentNode.clientHeight;
 	},
 
+	/**
+	 * Updates the game's state
+	 * @return {[type]} [description]
+	 */
+	update: function () {
+		var curState = this.gameController.getState();
+		var states = this._states;
 
-	render : function () {
+		switch (curState) {
+
+		case states.BATTLE_NEW:
+			this.gameController.setState('BATTLE');
+			break;
+
+		case states.BATTLE:
+			if (this.battleField.over()) {
+				this.gameController.set('BATTLE_END');
+			}
+			break;
+		}
+	},
+
+
+	render: function () {
+		this.update();
+
 		var context = this.context,
 			canvas = this.canvas;
 
 		canvas.width = canvas.width; // clears the canvas
 
+		this.battleField.setTileCursorHover(this.controls.getMapMouseCoord());
 		this.battleField.render();
 	}
 });
 
 var gww = new GWW();
-
 
 /**
  * Function to update the scene of the entire game.
@@ -102,6 +136,5 @@ var gww = new GWW();
 		lastUpdateTime = Date.now();
 	}
 
-	// render();
-	gww.render();
+	render();
 }(gww));

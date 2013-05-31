@@ -15,6 +15,10 @@ var Tile = klass({
 	texture: '',		// stores index of textures list
 	resource: '',		// stores an image that will be render in this tile
 
+	// mouse states
+	hover: 0,
+	active: 0,
+
 	initialize: function (configs) {
 		var pos;
 
@@ -30,7 +34,7 @@ var Tile = klass({
 	 * @param  {integer} y y-axis position
 	 * @return {object}
 	 */
-	findTileCenter: function(dx, dy) {	
+	findTileCenter: function (dx, dy) {
 		var step = this.scaledTileSize,
 			xMedPoint,
 			yMedPoint,
