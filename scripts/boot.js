@@ -12,17 +12,23 @@ require.config({
 		Legacy: 'libs/legacy',
 
 		BattleField: 'models/BattleField',
-		Resource: 'models/Resource',
-		Tile: 'models/Tile',
 		GameController: 'models/GameController',
+		Layer: 'models/Layer',
+		Tile: 'models/Tile',
+		Resource: 'models/Resource',
+		Entity: 'models/Entity',
+		EntityPool: 'models/EntityPool',
 
 		Screen: 'UI/Screen',
 		Controls: 'UI/Controls'
 	},
 
 	shim: {
-		'GameController': ['Core', 'Events', 'Legacy'],
 		'Controls': ['Core', 'Events', 'Legacy'],
+		'Entity': ['Core', 'Events', 'Legacy'],
+		'EntityPool': ['Entity'],
+		'GameController': ['Core', 'Events', 'Legacy'],
+		'Layer': ['Core', 'Events', 'Legacy'],
 		'Screen': ['Core', 'Events', 'Legacy'],
 
 		'Tile': ['Core', 'Events', 'Legacy'],
@@ -33,6 +39,6 @@ require.config({
 
 });
 
-define(['App', 'Core', 'Events', 'Legacy', 'BattleField', 'Tile', 'Resource', 'Screen', 'Controls', 'GameController' /*'jQuery'*/], function () {
+define(['App', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'Resource', 'Screen' /*'jQuery'*/], function () {
 
 });

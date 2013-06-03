@@ -102,7 +102,8 @@ var GWW = klass({
 		var context = this.context,
 			canvas = this.canvas;
 
-		canvas.width = canvas.width; // clears the canvas
+		// canvas.width = canvas.width; // clears the canvas
+		// context.clearRect(0,0, canvas.width, canvas.height)
 
 		this.battleField.setTileCursorHover(this.controls.getMapMouseCoord());
 		this.battleField.render();
@@ -123,18 +124,8 @@ var gww = new GWW();
 
 	function render() {
 		requestAnimFrame(render);
-
-		var delta = Date.now() - lastUpdateTime;
-		if (acDelta > msPerFrame) {
-			acDelta = 0;
-			gww.render();
-			gww.totalFrames++;
-		} else {
-			acDelta += delta;
-		}
-
-		lastUpdateTime = Date.now();
+		gww.render();
+		gww.totalFrames++;
 	}
-
 	render();
 }(gww));
