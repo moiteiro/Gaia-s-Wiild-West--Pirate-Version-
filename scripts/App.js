@@ -106,7 +106,7 @@ var GWW = klass({
 		// context.clearRect(0,0, canvas.width, canvas.height)
 
 		this.battleField.setTileCursorHover(this.controls.getMapMouseCoord());
-		this.battleField.render();
+		this.battleField.render(this.loopFrameCount);
 	}
 });
 
@@ -125,7 +125,23 @@ var gww = new GWW();
 	function render() {
 		requestAnimFrame(render);
 		gww.render();
-		gww.totalFrames++;
+
+		var delta = Date.now() - lastUpdateTime;
+		if (acDelta > msPerFrame) {
+			gww.totalFrames++;
+			gww.loopFrameCount++;
+			acDelta = 0;
+
+			if (gww.loopFrameCount >= 60) {
+				gww.loopFrameCount = 0;
+			}
+
+		} else {
+			acDelta += delta;
+		}
+
+		lastUpdateTime = Date.now();
 	}
+
 	render();
 }(gww));

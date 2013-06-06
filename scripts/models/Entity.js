@@ -1,4 +1,4 @@
-/*globals canvas, document, window, klass, stage */
+/*globals canvas, document, window, klass, stage, $ */
 
 // for a entiry layer composition.
 
@@ -65,10 +65,6 @@ var Entity = klass({
 			this._canvas.style.top = this.posY - (this._height) + 16;
 			this._canvas.style.left = this.posX - (this._width / 2);
 			this._context.drawImage(this._image, 0,  0);
-
-			console.log("x: " + this.coordX + " y: " + this.coordY);
-			console.log(this._canvas);
-
 		}
 	},
 
@@ -91,7 +87,7 @@ var Entity = klass({
 		xMedPoint = dx + ((x - y) * step);
 		yMedPoint = dy + (step / 2) + (step * y) + (step / 2 * (x - y));
 
-		this.posX = xMedPoint,
-		this.posY = yMedPoint
+		this.posX = xMedPoint;
+		this.posY = yMedPoint;
 	}
 });

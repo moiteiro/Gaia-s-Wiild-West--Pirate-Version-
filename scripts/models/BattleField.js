@@ -8,8 +8,8 @@ var BattleField = klass({
 	screenHeight: 0,
 	width: 10,					// amount of squares in X orientation
 	height: 10,					// amout of squres in Y orientation
-	maxSize: 15,				// max size for width and height
-	minSize: 12,					// min size for width and height
+	maxSize: 22,				// max size for width and height
+	minSize: 14,					// min size for width and height
 	offsetX: 430,				// to store de original values of the first Tile 0,0
 	offsetY: 150,				// to store de original values of the first Tile 0,0
 	translatedX: 0,				// store the move on x-axis
@@ -30,6 +30,8 @@ var BattleField = klass({
 		oldX: 0,
 		oldY: 0
 	},
+
+	frameCount: 0,
 
 	subsoilLayer: "",
 	terrainLayer: "",
@@ -126,7 +128,6 @@ var BattleField = klass({
 			}
 		}
 
-
 		this.offsetX = (this.screenWidth / 2) + (this.height - this.width) *  (this.scaledTileSize / 2);
 		this.offsetY = (this.screenHeight / 2) - ((this.scaledTileSize / 2 * this.height) + (this.width - this.height) * this.scaledTileSize / 4);
 
@@ -138,10 +139,10 @@ var BattleField = klass({
 	 * Defines tiles that can be walkable for characters.
 	 * @return {integer} total of walkable tiles.
 	 */
-	generatePlayableArena: function() {
+	generatePlayableArena: function () {
 
 		var centerX = Math.floor((this.width - 1) / 2), // getting the central point in the arena
-			centerY = Math.floor((this.height -1) / 2),
+			centerY = Math.floor((this.height - 1) / 2),
 			TotalTiles = this.width * this.height,
 			ArenaPerCent = Math.floor(80 * TotalTiles / 100),
 			tilePos,
@@ -153,7 +154,7 @@ var BattleField = klass({
 
 		// setting a starting point in the map to create a route of common terrain to escape.
 		for (i = 2; i >= 0; i--) {
-			for(j = 2; j >= 0; j--) {
+			for (j = 2; j >= 0; j--) {
 				this.map[centerY + (i - 1)][centerX + (j - 1)].type = 1; // verificar se existe essa posicao
 				ArenaPerCent--;
 			}
@@ -161,10 +162,10 @@ var BattleField = klass({
 
 		i = ArenaPerCent;
 
-		while(i && tiles <= ArenaPerCent) {
+		while (i && tiles <= ArenaPerCent) {
 
 			tilePos = this.getARandomMapPosition();
-			
+
 			totalNeighborTiles = this.findTotalWalkableNeighbors(tilePos.x, tilePos.y);
 			if (totalNeighborTiles === 3) {
 				tiles++;
@@ -186,16 +187,16 @@ var BattleField = klass({
 	/**
 	 * Returns a position that has three neighbor tiles with type = 1
 	 */
-	findTotalWalkableNeighbors: function(x, y) {
+	findTotalWalkableNeighbors: function (x, y) {
 		var neighborAmount = 0,
 			map = this.map,
 			i,
 			j;
 
 		for (i = 2; i >= 0; i--) {
-			for(j = 2; j >= 0; j--) {
-				if (map[y + (i - 1)] && 
-				    map[y + (i - 1)][x + (j - 1)] && 
+			for (j = 2; j >= 0; j--) {
+				if (map[y + (i - 1)] &&
+				    map[y + (i - 1)][x + (j - 1)] &&
 				    map[y + (i - 1)][x + (j - 1)].type === 1) {
 					neighborAmount++;
 				}
@@ -213,19 +214,19 @@ var BattleField = klass({
 	getARandomMapPosition: function () {
 
 		var x,
-			y, 
+			y,
 			i = true,
 			continueSearching = true,
 			width = this.width,
 			height = this.height;
 
-		
+
 		while (i) {
 			x = Math.round(Math.random() * width);
 			y = Math.round(Math.random() * height);
 
-			x = x > (width - 1) ? x - 1: x;
-			y = y > (height - 1) ? y - 1: y;
+			x = x > (width - 1) ? x - 1 : x;
+			y = y > (height - 1) ? y - 1 : y;
 
 
 			if (this.map[y][x].type === 0 || this.map[y][x].type === null) {
@@ -243,13 +244,13 @@ var BattleField = klass({
 	 */
 	setNonWalkableTiles: function () {
 		var i,
-		pos,
-		index,
-		objectIndex,
-		totalResources = this.resources.totalResources,
-		nonWalkable = this.resources.resourcesType.nonWalkable,
-		resources = this.resources.elems,
-		amount = this.resources.resourcesType.amount;
+			pos,
+			index,
+			objectIndex,
+			totalResources = this.resources.totalResources,
+			nonWalkable = this.resources.resourcesType.nonWalkable,
+			resources = this.resources.elems,
+			amount = this.resources.resourcesType.amount;
 
 		for (i =  amount - 1; i >= 0; i--) {
 
@@ -260,7 +261,8 @@ var BattleField = klass({
 			this.objectsPool._entityPool[objectIndex].setImage(resources[nonWalkable[index]]);
 			this.objectsPool._entityPool[objectIndex].setCoordinates(pos.x, pos.y);
 			this.objectsPool._entityPool[objectIndex].calculate(this.dx, this.dy, this.scaledTileSize);
-			this.map[pos.y][pos.x].type = 5;
+			this.map[pos.y][pos.x].type = 5; // that is right!
+
 		}
 
 		this.setSpecialWalkableTiles();
@@ -291,17 +293,17 @@ var BattleField = klass({
 	 * Place the resources images into the battleField
 	 * @return {void}
 	 */
-	renderStaticObjects: function() {
+	renderStaticObjects: function () {
 		var i,
-		amount = this.resources.resourcesType.amount;
+			amount = this.resources.resourcesType.amount;
 
 		for (i = 0; i < amount; i++) {
 			this.objectsPool._entityPool[i].forceRender();
 		}
 	},
 
-	
-	renderTerrain: function() {
+
+	renderTerrain: function () {
 
 		var context = this.terrainLayer.context,
 			terrainNames = this.resources.resourcesType.terrain,
@@ -312,13 +314,13 @@ var BattleField = klass({
 			tile,
 			image,
 			pos,
-			x, 
+			x,
 			y;
 
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
 				tile = map[y][x];
-				pos = tile.findTileCenter(this.dx,this.dy);
+				pos = tile.findTileCenter(this.dx, this.dy);
 				image = terrains[terrainNames[tile.terrain]];
 				context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 32);
 			}
@@ -341,20 +343,20 @@ var BattleField = klass({
 		context.lineWidth = 1;
 		context.fillStyle = '#986532';
 
-		for ( i = 0; i < this.width; i++) {
+		for (i = 0; i < this.width; i++) {
 			context.moveTo(x - (i * h), y);
-			context.lineTo(x  - ((i - 1) * h / 2) - (i * halfH) ,y  + halfH);
-			context.lineTo(x - (i * halfH) - ((i + 1) * halfH),y  + halfH);
+			context.lineTo(x  - ((i - 1) * h / 2) - (i * halfH), y  + halfH);
+			context.lineTo(x - (i * halfH) - ((i + 1) * halfH), y  + halfH);
 			context.lineTo(x  - ((i + 1) * h), y);
-			context.lineTo(x  - (i * h) , y);
+			context.lineTo(x  - (i * h), y);
 		}
 
-		for ( i = 0; i < this.height; i ++) {
-			context.moveTo(x  , y - (i * h));
-			context.lineTo(x + h / 2 ,y - ((i - 1) * h + halfH ));
-			context.lineTo(x + h - halfH,y - (i * h) - halfH);
-			context.lineTo(x , y - ((i + 1) * h));
-			context.lineTo(x  , y - (i * h));
+		for (i = 0; i < this.height; i++) {
+			context.moveTo(x, y - (i * h));
+			context.lineTo(x + h / 2, y - ((i - 1) * h + halfH));
+			context.lineTo(x + h - halfH, y - (i * h) - halfH);
+			context.lineTo(x, y - ((i + 1) * h));
+			context.lineTo(x, y - (i * h));
 		}
 
 		context.fill();
@@ -383,14 +385,14 @@ var BattleField = klass({
 		context.lineWidth = 3;
 
 		for (y = 0; y < height; y++) {
-	    	for (x = 0; x < width; x++) {
-	        	
+			for (x = 0; x < width; x++) {
+
 				context.strokeRect(dx, dy, tileSize, tileSize);
-				
+
 				dx += tileSize;
-	    	}
-	    	dx = 0;
-	    	dy += tileSize;
+			}
+			dx = 0;
+			dy += tileSize;
 		}
 	},
 
@@ -403,7 +405,11 @@ var BattleField = klass({
 
 		if (tile.x !== null) {
 			context.clearRect(tile.oldX * tileSize, tile.oldY * tileSize, tileSize, tileSize);
-			context.fillStyle = "rgba(0, 0, 255, 0.3)";
+			if (this.map[tile.y][tile.x].type === 5) {
+				context.fillStyle = "transparent";
+			} else {
+				context.fillStyle = "rgba(0, 0, 255, 0.3)";
+			}
 			context.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
 		} else if (tile.x === null && tile.oldX !== null) {
 			// the last tile
@@ -411,14 +417,16 @@ var BattleField = klass({
 		}
 	},
 
-	render: function () {
-		if (this._forceRender) {		
+	render: function (frame) {
+		this.frameCount = frame;
+
+		if (this._forceRender) {
 			this.renderTerrain();
 			this.renderGrid();
 			this.renderSubsoil();
 			this.renderStaticObjects();
 		}
-		this.renderNavLayer();
+		this.renderNavLayer(frame);
 		this._forceRender = false;
 	},
 
@@ -433,7 +441,7 @@ var BattleField = klass({
 	 * Returns all coordinates of the map
 	 * @return {[type]} [description]
 	 */
-	getAttributes: function() {
+	getAttributes: function () {
 
 		return {
 			offsetX: this.offsetX,
