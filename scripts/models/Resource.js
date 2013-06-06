@@ -2,16 +2,14 @@
 
 var Resource = klass({
 
-	context: null,
-
 	type: "",  // nature, civilization, space
 
 	resourcesType: {
-		name: "savanna", 			// documentar todos os tipos de biomas
-		nonWalkable: ['rock', 'rock1','tree','tree2'],
+		name: "savanna",			// documentar todos os tipos de biomas
+		nonWalkable: ['rock', 'rock1', 'tree'],
 		walkable: [],
 		terrain: ['grass1', 'grass2', 'grass3', 'grass4'],
-		amount: 20  				// total of resource that composes this environment
+		amount: 20					// total of resource that composes this environment
 	},
 
 	path: "",
@@ -19,7 +17,7 @@ var Resource = klass({
 	walkableElems: [],
 	terrainElems: [],
 	elems: [],
-	
+
 	totalResources: 0,
 	totalResourcesLoaded: 0,
 
@@ -34,33 +32,33 @@ var Resource = klass({
 	},
 
 	loadAllResources: function () {
-		var nonWalkable  	 = this.resourcesType.nonWalkable,
-			walkable         = this.resourcesType.walkable,
-			terrain          = this.resourcesType.terrain,
+		var nonWalkable	= this.resourcesType.nonWalkable,
+			walkable	= this.resourcesType.walkable,
+			terrain		= this.resourcesType.terrain,
 			length,
 			i;
 
 		length = nonWalkable.length;
 
-		for (i = 0; i < length ; i++) {
+		for (i = 0; i < length; i++) {
 			this.loadResource(nonWalkable[i], "nonWalkableElems");
 		}
-		
-		length = walkable.length;		
-		for (i = 0; i < length ; i++) {
+
+		length = walkable.length;
+		for (i = 0; i < length; i++) {
 			this.loadResource(walkable[i], "walkableElems");
 		}
 
-		length = terrain.length;		
-		for (i = 0; i < length ; i++) {
+		length = terrain.length;
+		for (i = 0; i < length; i++) {
 			this.loadResource(terrain[i], "terrainElems");
 		}
 	},
 
-	loadResource: function(name, elemsArray) {
+	loadResource: function (name, elemsArray) {
 		var image = new Image();
 		var callback = this.resourceLoaded;
-			
+
 		image.onload = function () {
 			// once the image is loaded:
 			this.width = this.naturalWidth;
@@ -74,7 +72,7 @@ var Resource = klass({
 		this[elemsArray][name] = image;
 	},
 
-	resourceLoaded: function(callback) {
+	resourceLoaded: function (callback) {
 
 		this.totalResourcesLoaded++;
 

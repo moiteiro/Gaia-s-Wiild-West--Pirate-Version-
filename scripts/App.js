@@ -1,24 +1,30 @@
 /*global window, document, klass, requestAnimFrame, $,
-	BattleField, Resource
+	BattleField, Resource, Controls, GameController
 */
 
 var GWW = klass({
-	name: "Gaia's Wild West",
+	name: "Gaia's Wild West (pirate version)",
 	version: '0.0.0',
 	canvas: '',
 	context: '',
 
 	screenWidth: 0,
 	screenHeight: 0,
-	msPerFrame: 16,
 	tileSize: 90,           // size of each square
 	scaledTileSize: 63.639, // size of tile after the scale operation
+	loopFrameCount: 0,
+	totalFrames: 0,
+	msPerFrame: 16,
 
-	HUD:null,
-	progression: null,
-	battleField: null,
-	resources: null,
-	map: null,
+	gameController: "",
+	controls: "",
+	HUD: "",
+	debugHUD: "",
+	progression: "",
+	battleField: "",
+	resources: "",
+	map: "",
+
 
 	initialize: function (configs) {
 		this.canvas = $('canvas');
@@ -28,7 +34,19 @@ var GWW = klass({
 			Object.extend(this, configs);
 		}
 
+		// mover para dentro de Screen
+		// utils.addListener(window, 'resize', Screen.doResize);
 		this.setFullScreen();
+
+		this.gameController = new GameController();
+		this.gameController.setState('BATTLE_NEW');
+		this._states = this.gameController.getAllStates();
+
+		this.controls = new Controls({
+			canvas: this.canvas,
+			tileSize: this.tileSize,
+			scaledTileSize: this.scaledTileSize
+		});
 
 		this.resources = new Resource({
 			path: "assets/nature/savanna/",
@@ -37,7 +55,6 @@ var GWW = klass({
 		});
 
 		// implementar algum tipo de load bar para esperar que todos os resources seja carregados.
-
 		this.battleField = new BattleField({
 			resources: this.resources,
 			context: this.context,
@@ -46,27 +63,54 @@ var GWW = klass({
 			scaledTileSize: this.scaledTileSize,
 			tileSize: this.tileSize
 		});
+
+		this.controls.setBattleFieldAttributes(this.battleField.getAttributes());
 	},
 
+	/* move to screen object*/
 	setFullScreen: function () {
 		this.screenWidth = this.canvas.width = this.canvas.parentNode.clientWidth;
 		this.screenHeight = this.canvas.height = this.canvas.parentNode.clientHeight;
 	},
 
+	/**
+	 * Updates the game's state
+	 * @return {[type]} [description]
+	 */
+	update: function () {
+		var curState = this.gameController.getState();
+		var states = this._states;
 
-	render : function () {
+		switch (curState) {
+
+		case states.BATTLE_NEW:
+			this.gameController.setState('BATTLE');
+			break;
+
+		case states.BATTLE:
+			if (this.battleField.over()) {
+				this.gameController.set('BATTLE_END');
+			}
+			break;
+		}
+	},
+
+
+	render: function () {
+		this.update();
+
 		var context = this.context,
 			canvas = this.canvas;
 
-		canvas.width = canvas.width; // clears the canvas
+		// canvas.width = canvas.width; // clears the canvas
+		// context.clearRect(0,0, canvas.width, canvas.height)
 
-		this.battleField.render();
+		this.battleField.setTileCursorHover(this.controls.getMapMouseCoord());
+		this.battleField.render(this.loopFrameCount);
 	}
-
 });
 
 var gww = new GWW();
-
 
 /**
  * Function to update the scene of the entire game.
@@ -78,13 +122,20 @@ var gww = new GWW();
 	var acDelta = 0;
 	var msPerFrame = gww.msPerFrame;
 
-	function render () {
+	function render() {
 		requestAnimFrame(render);
+		gww.render();
 
 		var delta = Date.now() - lastUpdateTime;
 		if (acDelta > msPerFrame) {
+			gww.totalFrames++;
+			gww.loopFrameCount++;
 			acDelta = 0;
-			gww.render();
+
+			if (gww.loopFrameCount >= 60) {
+				gww.loopFrameCount = 0;
+			}
+
 		} else {
 			acDelta += delta;
 		}

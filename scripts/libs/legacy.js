@@ -19,7 +19,7 @@ if (!Array.prototype.indexOf) {
 
 		var t = Object.create(this),
 			len = t.length >>> 0,
-			n, 
+			n,
 			k;
 
 		if (len === 0) {
@@ -42,7 +42,7 @@ if (!Array.prototype.indexOf) {
 
 		k = (n >= 0) ? n : Math.max(len - Math.abs(n), 0);
 
-		for ( k ; k < len; k++) {
+		for (k; k < len; k++) {
 			if (Object.hasOwnProperty.call(t, k) && t[k] === searchElement) {
 				return k;
 			}
@@ -78,7 +78,7 @@ if (!Object.keys) {
 			}
 
 			if (hasDontEnumBug) {
-				for (i = 0; i < dontEnumsLength; i++ ) {
+				for (i = 0; i < dontEnumsLength; i++) {
 					if (hasOwnProperty.call(obj, dontEnums[i])) {
 						result.push(dontEnums[i]);
 					}
@@ -88,3 +88,16 @@ if (!Object.keys) {
 		};
 	}());
 }
+
+// layers
+// 	terrain
+// 	mouse selection, ranges
+// 	static-objects (rocks, walls, houses) - each object will have their own canvas.
+// 	nostatic-ojects (tree, flowers, flags, bunfire)
+// 	interactible objects
+// 	chars (animations, skills, spells)
+// 	dialogs
+// 	hud
+
+// fazer um pool de layers para que cada um possa ser atualizado de acordo com a contagem geral dos frames.
+// cada classe (static e nostatic-ojects) podem ter um pool seperado e mais um para guardar quem nao esta sendo usado.

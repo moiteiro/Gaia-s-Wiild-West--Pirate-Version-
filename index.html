@@ -6,17 +6,24 @@
 				margin:0;
 				padding:0;
 			}
-			#canvas_wrapper {
+			#viewport {
 				width: 100%;
 				height: 100%;
+				cursor: url('assets/UI/cursorActive.cur'), url('assets/UI/cursorActive.png'), auto ;
+			}
+
+			canvas {
+				background-color: transparent;
+				position: absolute;
+				top:0;
+				left:0;
 			}
 		</style>
 		<script src='scripts/libs/require.js' data-main='scripts/boot.js'></script>
 	</head>
 	<body>
-		<div id='canvas_wrapper'>
-			<canvas id="canvas" style='' width="" height="" >
-				
+		<div id='viewport'>
+			<canvas id="canvas" style='z-index:1000' width="" height="" >
 			</canvas>
 		</div>
 	</body>
