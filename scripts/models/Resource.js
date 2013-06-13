@@ -6,7 +6,7 @@ var Resource = klass({
 
 	resourcesType: {
 		name: "savanna",			// documentar todos os tipos de biomas
-		nonWalkable: ['rock', 'rock1', 'tree', 'tree2'],
+		nonWalkable: ['rock', 'rock1', 'tree', 'tree1', 'tree2'],
 		walkable: [],
 		terrain: ['grass1', 'grass2', 'grass3', 'grass4'],
 		amount: 20					// total of resource that composes this environment
