@@ -15,10 +15,12 @@ var EntityPool = klass({
 		for (i = 0; i < this.totalEntities; ++i) {
 			this._entityPool.push(new Entity({index: i}));
 		}
+
+		console.log("initialize pool");
 	},
 
 	getEntity: function () {
-		if (this._isFull) {
+		if (this._isFull()) {
 			this._addEntity();
 		}
 
