@@ -1,4 +1,4 @@
-/*globals canvas, document, window, klass, stage */
+/*globals canvas, document, window, klass, stage, $ */
 
 // for a entiry layer composition.
 
@@ -9,9 +9,11 @@ var Layer = klass({
 	isometric: false,
 	translateX: 0,
 	translateY: 0,
-	
+
 	canvas: "",
 	context: "",
+
+	name: "",
 
 
 	initialize: function (configs) {
@@ -19,9 +21,9 @@ var Layer = klass({
 			Object.extend(this, configs);
 		}
 
-		var viewport = $('viewport');
-			canvas = document.createElement("canvas");
-			context = canvas.getContext('2d');
+		var viewport = $('viewport'),
+			canvas = document.createElement("canvas"),
+			context = canvas.getContext('2d'),
 			style = canvas.style;
 
 		viewport.appendChild(canvas);
@@ -30,6 +32,10 @@ var Layer = klass({
 		style.zIndex = this.zIndex;
 		this.canvas = canvas;
 		this.context = context;
+
+		if (this.name) {
+			this.canvas.id = this.name;
+		}
 	},
 
 	clear: function () {
@@ -43,5 +49,17 @@ var Layer = klass({
 
 	translate: function (x, y) {
 		this.context.translate(x, y);
-	}
-})
+		this.translateX = x;
+		this.translateY = y;
+	},
+
+	resize: function (width, height) {
+		this.canvas.width = width;
+		this.canvas.height = height;
+
+		if (this.isometric) {
+			this.context.translate(this.translateX, this.translateY);
+			this.isometricMode();
+		}
+	},
+});

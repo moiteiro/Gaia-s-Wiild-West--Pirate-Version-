@@ -2,7 +2,8 @@
 
 var utils = {
 	addListener: null,
-	removeListener: null
+	removeListener: null,
+	trigger: null,
 };
 
 if (typeof window.addEventListener === 'function') {
@@ -26,4 +27,8 @@ if (typeof window.addEventListener === 'function') {
 	utils.removeListener = function (el, type, fn) {
 		el['on' + type] = null;
 	};
+}
+
+utils.trigger = function (el, type) {
+	el.dispatchEvent(type);
 }

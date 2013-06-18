@@ -1,5 +1,5 @@
 /*global window, document, klass, requestAnimFrame, $,
-	BattleField, Resource, Controls, GameController
+	BattleField, Resource, Controls, GameController, Screen
 */
 
 var GWW = klass({
@@ -34,9 +34,11 @@ var GWW = klass({
 			Object.extend(this, configs);
 		}
 
-		// mover para dentro de Screen
-		// utils.addListener(window, 'resize', Screen.doResize);
 		this.setFullScreen();
+
+		this.screen = new Screen({
+			canvas: this.canvas
+		});
 
 		this.gameController = new GameController();
 		this.gameController.setState('BATTLE_NEW');
@@ -67,7 +69,7 @@ var GWW = klass({
 		this.controls.setBattleFieldAttributes(this.battleField.getAttributes());
 	},
 
-	/* move to screen object*/
+
 	setFullScreen: function () {
 		this.screenWidth = this.canvas.width = this.canvas.parentNode.clientWidth;
 		this.screenHeight = this.canvas.height = this.canvas.parentNode.clientHeight;
@@ -94,7 +96,6 @@ var GWW = klass({
 			break;
 		}
 	},
-
 
 	render: function () {
 		this.update();

@@ -1,4 +1,4 @@
-/*global klass, Tile, Entity, EntityPool, Layer */
+/*global klass, Tile, Entity, EntityPool, Layer, utils, window, document */
 
 var BattleField = klass({
 
@@ -45,12 +45,14 @@ var BattleField = klass({
 			Object.extend(this, configs);
 		}
 
+		this.events();
+
 		this.objectsPool = new EntityPool();
 
-		this.subsoilLayer = new Layer({zIndex: 1});
-		this.terrainLayer = new Layer({zIndex: 2});
-		this.gridLayer = new Layer({zIndex: 3});
-		this.navLayer = new Layer({zIndex: 4});
+		this.subsoilLayer = new Layer({zIndex: 1, isometric: true, name: "battlefield_subsoil"});
+		this.terrainLayer = new Layer({zIndex: 2, name: "battlefield_terrain"});
+		this.gridLayer = new Layer({zIndex: 3, isometric: true, name: "battlefield_grid"});
+		this.navLayer = new Layer({zIndex: 4, isometric: true, name: "battlefield_nav"});
 
 		this.generateArena();
 	},
@@ -451,6 +453,24 @@ var BattleField = klass({
 			dx: this.dx,
 			dy: this.dy
 		};
+	},
+
+	events: function () {
+		utils.addListener(window, 'resize', this.eventScreenOnResize.bind(this));
+	},
+
+	eventScreenOnResize: function () {
+		var width, height;
+
+		width = this.screenWidth = document.body.clientWidth;
+		height = this.screenHeight = document.body.clientHeight;
+
+		this.subsoilLayer.resize(width, height);
+		this.terrainLayer.resize(width, height);
+		this.gridLayer.resize(width, height);
+		this.navLayer.resize(width, height);
+
+		this._forceRender = true;
 	},
 
 });

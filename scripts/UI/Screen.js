@@ -4,6 +4,16 @@ var Screen = klass({
 	offsetX: 0,
 	offsetY: 0,
 	canvas: '',
+	screenWidth: 0,
+	screenHeight: 0,
+
+	initialize: function (configs) {
+		if (configs) {
+			Object.extend(this, configs);
+		}
+
+		this._setFullScreen();
+	},
 
 	intro: function () {},
 	fadeToBlack: function () {},
@@ -17,6 +27,11 @@ var Screen = klass({
 		console.log('implement do doResize');
 	},
 
+	_setFullScreen: function () {
+		this.screenWidth = this.canvas.width = this.canvas.parentNode.clientWidth;
+		this.screenHeight = this.canvas.height = this.canvas.parentNode.clientHeight;
+	},
+
 	_calculateOffset: function () {
 		var obj = this.canvas;
 
@@ -27,3 +42,15 @@ var Screen = klass({
 		}
 	}
 });
+
+var screenResize = utils.addListener(window, 'screenResize', function () {
+	console.log('window resize');
+});
+
+var screenResize = new CustomEvent('screenResize', {
+	detail: {
+		username: "moiteiro"
+	}
+});
+
+window.dispatchEvent(screenResize);
