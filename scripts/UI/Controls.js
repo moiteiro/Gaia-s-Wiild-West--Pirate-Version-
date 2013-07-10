@@ -24,6 +24,8 @@ var Controls = klass({
 		}
 
 		utils.addListener(document.body, 'click', this.handleClick.bind(this));
+		utils.addListener(document.body, 'mousedown', this.handleMouseDown.bind(this));
+		utils.addListener(document.body, 'mousedown', this.handleMouseUp.bind(this));
 		utils.addListener(document.body, 'mousemove', this.handleMouseMove.bind(this));
 	},
 
@@ -35,7 +37,15 @@ var Controls = klass({
 	handleClick: function (e) {
 		this._cursorOnTheMap(e.clientX, e.clientY);
 	},
-
+	
+	handleMouseDown: function(e) {
+		this._startScrollMap(e.clientX, e.clientY);
+	},
+	
+	handleMouseUp: function (e) {
+		this._stopScrollMap(e.clientX, e.clientY);
+	},
+		
 	handleMouseMove: function (e) {
 		var pos = this._cursorOnTheMap(e.clientX, e.clientY);
 		this.battleField.x = pos !== undefined ? pos.x : null;
@@ -69,6 +79,22 @@ var Controls = klass({
 			};
 		}
 		return;	
+	},
+	
+	_startScrollMap: function (x, y) {
+		var startDragX = x,
+			startDragY = y,
+			endDragX = 0,
+			endDragY = 0;
+			
+		utils.addListener(document.body, "mousemove", this._scrollingMap.bind(this));
+	},
+	
+	_scrollingMap: function (e) {
+		console.log("scrolling map");
+	},
+	
+	_stopScrollMap: function () {
+		utils.removeListener(document.body, "mousemove", this._scrollingMap);
 	}
-
 });

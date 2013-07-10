@@ -9,7 +9,7 @@ var Resource = klass({
 		nonWalkable: ['rock', 'rock1', 'tree', 'tree1', 'tree2'],
 		walkable: [],
 		terrain: ['grass1', 'grass2', 'grass3', 'grass4'],
-		amount: 20					// total of resource that composes this environment
+		amount: 10					// total of resource that composes this environment
 	},
 
 	path: "",
