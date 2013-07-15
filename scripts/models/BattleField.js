@@ -71,7 +71,11 @@ var BattleField = klass({
 
 	generateArena: function () {
 
-		var mapSize = this.width * this.height,
+		var width = this.width,
+			height = this.height, 
+			widthScaled = width * this.scaledTileSize + (1.5 * this.scaledTileSize), // adding some extra area for security
+			heightScaled = height * this.scaledTileSize + (1.5 * this.scaledTileSize),
+			mapSize = width * height,
 			minPlayableTiles = 60,
 			i = true;
 
@@ -89,14 +93,22 @@ var BattleField = klass({
 			}
 		}
 
+		widthScaled += this.dx;
+		heightScaled += this.dy;
+
+		this.subsoilLayer.resize(widthScaled, heightScaled);
 		this.subsoilLayer.translate(this.dx, this.dy);
 		this.subsoilLayer.isometricMode();
 
-		this.gridLayer.translate(this.dx, this.dy);
+		this.gridLayer.resize(widthScaled, heightScaled);
+		this.gridLayer.translate(this.dx, this.dy);	
 		this.gridLayer.isometricMode();
 
+		this.navLayer.resize(widthScaled, heightScaled);
 		this.navLayer.translate(this.dx, this.dy);
 		this.navLayer.isometricMode();
+
+		this.terrainLayer.resize(widthScaled, heightScaled);
 
 		this.setNonWalkableTiles();
 	},
@@ -123,6 +135,7 @@ var BattleField = klass({
 				this.map[y][x] = new Tile({
 					x: x,
 					y: y,
+					elevation: 0,
 					type: 0,
 					terrain: terrainType,
 					scaledTileSize: this.scaledTileSize
@@ -305,6 +318,12 @@ var BattleField = klass({
 	},
 
 
+	// TODO: cada terreno precisar ter o seu proprio subssolo, a funcao abaixo deve ser acoplada a essa. 
+	// Esse metodo deve ser transferido para a classs Tile.
+	/**
+	 * Renders the terrain of the map, this includes water too.
+	 * @return {[type]} [description]
+	 */
 	renderTerrain: function () {
 
 		var context = this.terrainLayer.context,
@@ -312,6 +331,7 @@ var BattleField = klass({
 			terrains = this.resources.terrainElems,
 			width = this.width,
 			height = this.height,
+			elevation,
 			map = this.map,
 			tile,
 			image,
@@ -322,52 +342,52 @@ var BattleField = klass({
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
 				tile = map[y][x];
-				pos = tile.findTileCenter(this.dx, this.dy);
 				image = terrains[terrainNames[tile.terrain]];
-				context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 32);
+				tile.render(context, image, this.dx, this.dy);
 			}
 		}
 	},
 
+	// TODO: essa funcao deve ser transportada para os tiles. cada tile deve ter a propria rendericazao do seu subsolo,
+	// dessa forma conseguimos garantir que independente da altura do tile, ele tera o seu proprio subsolo renderizado.
 	/**
 	 * Creates a subsoil bounds
 	 * @return void
 	 */
-	renderSubsoil: function () {
+	// renderSubsoil: function () {
+	// 	var context = this.subsoilLayer.context;
+	// 	var i;
+	// 	var x = this.tileSize * this.width;
+	// 	var y = this.tileSize * this.height;
+	// 	var h = this.tileSize;
+	// 	var halfH = h / 2;
 
-		var context = this.subsoilLayer.context;
-		var i;
-		var x = this.tileSize * this.width;
-		var y = this.tileSize * this.height;
-		var h = this.tileSize;
-		var halfH = h / 2;
+	// 	context.lineWidth = 1;
+	// 	context.fillStyle = '#986532';
 
-		context.lineWidth = 1;
-		context.fillStyle = '#986532';
+	// 	for (i = 0; i < this.width; i++) {
+	// 		context.moveTo(x - (i * h), y);
+	// 		context.lineTo(x  - ((i - 1) * h / 2) - (i * halfH), y  + halfH);
+	// 		context.lineTo(x - (i * halfH) - ((i + 1) * halfH), y  + halfH);
+	// 		context.lineTo(x  - ((i + 1) * h), y);
+	// 		context.lineTo(x  - (i * h), y);
+	// 	}
 
-		for (i = 0; i < this.width; i++) {
-			context.moveTo(x - (i * h), y);
-			context.lineTo(x  - ((i - 1) * h / 2) - (i * halfH), y  + halfH);
-			context.lineTo(x - (i * halfH) - ((i + 1) * halfH), y  + halfH);
-			context.lineTo(x  - ((i + 1) * h), y);
-			context.lineTo(x  - (i * h), y);
-		}
+	// 	for (i = 0; i < this.height; i++) {
+	// 		context.moveTo(x, y - (i * h));
+	// 		context.lineTo(x + h / 2, y - ((i - 1) * h + halfH));
+	// 		context.lineTo(x + h - halfH, y - (i * h) - halfH);
+	// 		context.lineTo(x, y - ((i + 1) * h));
+	// 		context.lineTo(x, y - (i * h));
+	// 	}
 
-		for (i = 0; i < this.height; i++) {
-			context.moveTo(x, y - (i * h));
-			context.lineTo(x + h / 2, y - ((i - 1) * h + halfH));
-			context.lineTo(x + h - halfH, y - (i * h) - halfH);
-			context.lineTo(x, y - ((i + 1) * h));
-			context.lineTo(x, y - (i * h));
-		}
-
-		context.fill();
-		context.stroke();
-	},
+	// 	context.fill();
+	// 	context.stroke();
+	// },
 
 
 	/**
-	 * Render all terrain and non NCP's related objects of the map.
+	 * Render all terrain and non NCP's related to objects of the map.
 	 * @return void
 	 */
 	renderGrid: function () {
@@ -398,6 +418,10 @@ var BattleField = klass({
 		}
 	},
 
+	/**
+	 * Renders the layer where the mouse interacts. It's used either to show the mouse selection.
+	 * @return void
+	 */
 	renderNavLayer: function () {
 		var context = this.navLayer.context,
 			width = this.width,
@@ -419,13 +443,14 @@ var BattleField = klass({
 		}
 	},
 
+
 	render: function (frame) {
 		this.frameCount = frame;
 
 		if (this._forceRender) {
 			this.renderTerrain();
-			this.renderGrid();
-			this.renderSubsoil();
+			// this.renderGrid();
+			// this.renderSubsoil();
 			this.renderStaticObjects();
 		}
 		this.renderNavLayer(frame);
@@ -456,7 +481,7 @@ var BattleField = klass({
 	},
 
 	events: function () {
-		utils.addListener(window, 'resize', this.eventScreenOnResize.bind(this));
+		// utils.addListener(window, 'resize', this.eventScreenOnResize.bind(this));
 	},
 
 	eventScreenOnResize: function () {
