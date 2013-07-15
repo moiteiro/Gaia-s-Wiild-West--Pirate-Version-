@@ -26,9 +26,6 @@ var Layer = klass({
 			context = canvas.getContext('2d'),
 			style = canvas.style;
 
-
-		// TODO: verificar a variavel canvas. Ela esta sendo setada toda vez que um novo layer eh criado.
-		// verificar se realmente esta sendo utilizada e ver uma forma de setar apenas uma vez.
 		viewport.appendChild(canvas);
 		canvas.width = viewport.clientWidth;
 		canvas.height = viewport.clientHeight;

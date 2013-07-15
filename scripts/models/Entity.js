@@ -18,7 +18,7 @@ var Entity = klass({
 	_canvas: "",
 	_context: "",
 	_image: "",
-	_staticIndex: 20,
+	_staticIndex: 2000,
 
 
 	initialize: function (configs) {
@@ -61,7 +61,6 @@ var Entity = klass({
 				this._height
 			);
 
-			// context.drawImage(image,  pos.x - (image.width / 2),  pos.y - (image.height) + 16 );
 			this._canvas.style.top = this.posY - (this._height) + 16;
 			this._canvas.style.left = this.posX - (this._width / 2);
 			this._context.drawImage(this._image, 0,  0);

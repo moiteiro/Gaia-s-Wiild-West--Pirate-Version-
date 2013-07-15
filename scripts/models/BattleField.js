@@ -341,7 +341,15 @@ var BattleField = klass({
 
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
+
 				tile = map[y][x];
+				// if ( y === 2 && x === 2) {
+				// 	tile.elevation = 2;
+				// }
+
+				// if (y === 8 && x === 5) {
+				// 	tile.elevation = 6;
+				// }
 				image = terrains[terrainNames[tile.terrain]];
 				tile.render(context, image, this.dx, this.dy);
 			}
@@ -453,7 +461,7 @@ var BattleField = klass({
 			// this.renderSubsoil();
 			this.renderStaticObjects();
 		}
-		this.renderNavLayer(frame);
+		// this.renderNavLayer(frame);
 		this._forceRender = false;
 	},
 
