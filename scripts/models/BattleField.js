@@ -135,7 +135,7 @@ var BattleField = klass({
 				this.map[y][x] = new Tile({
 					x: x,
 					y: y,
-					elevation: 0,
+					elevation: Math.floor(Math.random() * 2),
 					type: 0,
 					terrain: terrainType,
 					scaledTileSize: this.scaledTileSize
@@ -260,7 +260,9 @@ var BattleField = klass({
 	setNonWalkableTiles: function () {
 		var i,
 			pos,
+			tile,
 			index,
+			object,
 			objectIndex,
 			totalResources = this.resources.totalResources,
 			nonWalkable = this.resources.resourcesType.nonWalkable,
@@ -271,13 +273,15 @@ var BattleField = klass({
 
 			index = Math.floor(Math.random() * totalResources);
 			pos = this.getARandomMapPosition();
-
 			objectIndex = this.objectsPool.getEntity();
-			this.objectsPool._entityPool[objectIndex].setImage(resources[nonWalkable[index]]);
-			this.objectsPool._entityPool[objectIndex].setCoordinates(pos.x, pos.y);
-			this.objectsPool._entityPool[objectIndex].calculate(this.dx, this.dy, this.scaledTileSize);
-			this.map[pos.y][pos.x].type = 5; // that is right!
+			object = this.objectsPool._entityPool[objectIndex];
+			tile = this.map[pos.y][pos.x];
 
+			object.setImage(resources[nonWalkable[index]]);
+			object.setCoordinates(pos.x, pos.y);
+			object.calculate(this.dx, this.dy, this.scaledTileSize);
+
+			tile.type = 5; // that is right!
 		}
 
 		this.setSpecialWalkableTiles();
@@ -309,17 +313,22 @@ var BattleField = klass({
 	 * @return {void}
 	 */
 	renderStaticObjects: function () {
-		var i,
-			amount = this.resources.resourcesType.amount;
+		var amount = this.resources.resourcesType.amount,
+			object,
+			i;
+
 
 		for (i = 0; i < amount; i++) {
-			this.objectsPool._entityPool[i].forceRender();
+			object = this.objectsPool._entityPool[i];
+
+			// REMOVER ISSO DAQUI: Inserir dentro da funcao de criacao de montanhas a ser criada.
+			object.setElevationOffset(this.map[object.coordY][object.coordX].elevationOffset);
+
+			
+			object.forceRender();
 		}
 	},
 
-
-	// TODO: cada terreno precisar ter o seu proprio subssolo, a funcao abaixo deve ser acoplada a essa. 
-	// Esse metodo deve ser transferido para a classs Tile.
 	/**
 	 * Renders the terrain of the map, this includes water too.
 	 * @return {[type]} [description]
@@ -331,11 +340,9 @@ var BattleField = klass({
 			terrains = this.resources.terrainElems,
 			width = this.width,
 			height = this.height,
-			elevation,
 			map = this.map,
 			tile,
 			image,
-			pos,
 			x,
 			y;
 
@@ -343,86 +350,9 @@ var BattleField = klass({
 			for (x = 0; x < width; x++) {
 
 				tile = map[y][x];
-				// if ( y === 2 && x === 2) {
-				// 	tile.elevation = 2;
-				// }
-
-				// if (y === 8 && x === 5) {
-				// 	tile.elevation = 6;
-				// }
 				image = terrains[terrainNames[tile.terrain]];
 				tile.render(context, image, this.dx, this.dy);
 			}
-		}
-	},
-
-	// TODO: essa funcao deve ser transportada para os tiles. cada tile deve ter a propria rendericazao do seu subsolo,
-	// dessa forma conseguimos garantir que independente da altura do tile, ele tera o seu proprio subsolo renderizado.
-	/**
-	 * Creates a subsoil bounds
-	 * @return void
-	 */
-	// renderSubsoil: function () {
-	// 	var context = this.subsoilLayer.context;
-	// 	var i;
-	// 	var x = this.tileSize * this.width;
-	// 	var y = this.tileSize * this.height;
-	// 	var h = this.tileSize;
-	// 	var halfH = h / 2;
-
-	// 	context.lineWidth = 1;
-	// 	context.fillStyle = '#986532';
-
-	// 	for (i = 0; i < this.width; i++) {
-	// 		context.moveTo(x - (i * h), y);
-	// 		context.lineTo(x  - ((i - 1) * h / 2) - (i * halfH), y  + halfH);
-	// 		context.lineTo(x - (i * halfH) - ((i + 1) * halfH), y  + halfH);
-	// 		context.lineTo(x  - ((i + 1) * h), y);
-	// 		context.lineTo(x  - (i * h), y);
-	// 	}
-
-	// 	for (i = 0; i < this.height; i++) {
-	// 		context.moveTo(x, y - (i * h));
-	// 		context.lineTo(x + h / 2, y - ((i - 1) * h + halfH));
-	// 		context.lineTo(x + h - halfH, y - (i * h) - halfH);
-	// 		context.lineTo(x, y - ((i + 1) * h));
-	// 		context.lineTo(x, y - (i * h));
-	// 	}
-
-	// 	context.fill();
-	// 	context.stroke();
-	// },
-
-
-	/**
-	 * Render all terrain and non NCP's related to objects of the map.
-	 * @return void
-	 */
-	renderGrid: function () {
-		var context = this.gridLayer.context,
-			width = this.width,
-			height = this.height,
-			tileSize = this.tileSize,
-			dx = 0,
-			dy = 0,
-			x = 0,
-			y = 0,
-			i = 0;
-
-
-		context.strokeStyle = "#000";
-		context.globalAlpha = 0.15;
-		context.lineWidth = 3;
-
-		for (y = 0; y < height; y++) {
-			for (x = 0; x < width; x++) {
-
-				context.strokeRect(dx, dy, tileSize, tileSize);
-
-				dx += tileSize;
-			}
-			dx = 0;
-			dy += tileSize;
 		}
 	},
 
@@ -457,11 +387,8 @@ var BattleField = klass({
 
 		if (this._forceRender) {
 			this.renderTerrain();
-			// this.renderGrid();
-			// this.renderSubsoil();
 			this.renderStaticObjects();
 		}
-		// this.renderNavLayer(frame);
 		this._forceRender = false;
 	},
 

@@ -10,15 +10,16 @@ var Entity = klass({
 	static: true,
 	coordX: null,
 	coordY: null,
-	posX: null,		// pos x in pixels
-	posY: null,		// pos y in pixels
+	posX: null,				// pos x in pixels
+	posY: null,				// pos y in pixels
+	elevationOffset: 10,  // the tile elevation
 
 	_width: "",
 	_height: "",
 	_canvas: "",
 	_context: "",
 	_image: "",
-	_staticIndex: 2000,
+	_staticIndex: 2,
 
 
 	initialize: function (configs) {
@@ -43,6 +44,10 @@ var Entity = klass({
 		this.coordY = y;
 	},
 
+	setElevationOffset: function (elevation) {
+		this.elevationOffset = elevation;
+	},
+
 	calculate: function (dx, dy, step) {
 		this.calculateZIndex();
 		this.findTileCenter(dx, dy, step);
@@ -61,9 +66,11 @@ var Entity = klass({
 				this._height
 			);
 
-			this._canvas.style.top = this.posY - (this._height) + 16;
+			this._canvas.style.top = this.posY - (this._height) + 16 - this.elevationOffset;
 			this._canvas.style.left = this.posX - (this._width / 2);
 			this._context.drawImage(this._image, 0,  0);
+
+			console.log(this.elevationOffset);
 		}
 	},
 
