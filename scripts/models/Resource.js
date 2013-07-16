@@ -9,6 +9,7 @@ var Resource = klass({
 		nonWalkable: ['rock', 'rock1', 'tree', 'tree1', 'tree2'],
 		walkable: [],
 		terrain: ['grass1', 'grass2', 'grass3', 'grass4'],
+		subsoil: ['subsoil-grass1', 'subsoil-grass2', 'subsoil-grass3', 'subsoil-grass4'],
 		amount: 10					// total of resource that composes this environment
 	},
 
@@ -16,6 +17,7 @@ var Resource = klass({
 	nonWalkableElems: [],
 	walkableElems: [],
 	terrainElems: [],
+	subsoilElems: [],
 	elems: [],
 
 	totalResources: 0,
@@ -35,6 +37,7 @@ var Resource = klass({
 		var nonWalkable	= this.resourcesType.nonWalkable,
 			walkable	= this.resourcesType.walkable,
 			terrain		= this.resourcesType.terrain,
+			subsoil		= this.resourcesType.subsoil,
 			length,
 			i;
 
@@ -52,6 +55,11 @@ var Resource = klass({
 		length = terrain.length;
 		for (i = 0; i < length; i++) {
 			this.loadResource(terrain[i], "terrainElems");
+		}
+
+		length = subsoil.length;
+		for (i = 0; i < length; i++) {
+			this.loadResource(subsoil[i], "subsoilElems");
 		}
 	},
 

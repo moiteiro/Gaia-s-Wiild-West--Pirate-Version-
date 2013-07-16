@@ -138,6 +138,7 @@ var BattleField = klass({
 					elevation: Math.floor(Math.random() * 2),
 					type: 0,
 					terrain: terrainType,
+					subsoil: terrainType, // make this random like terrain
 					scaledTileSize: this.scaledTileSize
 				});
 			}
@@ -337,12 +338,14 @@ var BattleField = klass({
 
 		var context = this.terrainLayer.context,
 			terrainNames = this.resources.resourcesType.terrain,
+			subsoilNames = this.resources.resourcesType.subsoil,
 			terrains = this.resources.terrainElems,
+			subsoils = this.resources.subsoilElems,
 			width = this.width,
 			height = this.height,
 			map = this.map,
 			tile,
-			image,
+			terrainTexture,
 			x,
 			y;
 
@@ -350,8 +353,9 @@ var BattleField = klass({
 			for (x = 0; x < width; x++) {
 
 				tile = map[y][x];
-				image = terrains[terrainNames[tile.terrain]];
-				tile.render(context, image, this.dx, this.dy);
+				terrainTexture = terrains[terrainNames[tile.terrain]];
+				subsoilTexture = subsoils[subsoilNames[tile.subsoil]];
+				tile.render(context, terrainTexture, subsoilTexture, this.dx, this.dy);
 			}
 		}
 	},
@@ -387,7 +391,7 @@ var BattleField = klass({
 
 		if (this._forceRender) {
 			this.renderTerrain();
-			this.renderStaticObjects();
+			// this.renderStaticObjects();
 		}
 		this._forceRender = false;
 	},

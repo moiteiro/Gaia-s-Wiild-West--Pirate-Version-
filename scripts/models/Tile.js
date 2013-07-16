@@ -19,8 +19,11 @@ var Tile = klass({
 	centerY: '',
 	elevation: '',			// stores the ground elevation
 	elevationOffset: '',	// stores the ground elevation computed
-	texture: '',			// stores index of textures list
-	resource: '',			// stores an image that will be render in this tile
+
+	// textures
+	terrain: '',
+	subsoil: '',
+
 
 	// mouse states
 	hover: 0,
@@ -75,13 +78,13 @@ var Tile = klass({
 		};
 	},
 
-	render: function (context, image, dx, dy) {
+	render: function (context, terrainTexture, subsoilTexture, dx, dy) {
 		this.findTileCenter(dx, dy);
 		this.elevationOffset = this.elevation * this.scaledTileSize / 4;
 
 		if (!this.empty) {
-			this._renderSubsoil(context);
-			this._renderTerrain(context, image);
+			this._renderSubsoil(context, subsoilTexture);
+			this._renderTerrain(context, terrainTexture);
 			this._renderBorder(context);
 			this._calculateZIndex();
 
@@ -95,50 +98,70 @@ var Tile = klass({
 		this._context.drawImage(image, 0, 0);
 	},
 
-	_renderSubsoil: function (context) {
+	_renderSubsoil: function (context, image) {
 		var h1 = this.scaledTileSize,
 			h2 = this.scaledTileSize / 2,
 			context = this._context,
-			elevation = this.elevationOffset;
+			elevation = this.elevation,
+			elevationOffset = this.elevationOffset;
 
 		context.lineWidth = 0.5;
 		context.fillStyle = '#986532';
 
 		context.beginPath();
 		context.moveTo(0, h2);
-		context.lineTo(0, h1 + elevation); // h1 agora deve ser setado de acordo com a elevation.
-		context.lineTo(h1, h1 + h2 + elevation);
+		context.lineTo(0, h1 + elevationOffset); // h1 agora deve ser setado de acordo com a elevation.
+		context.lineTo(h1, h1 + h2 + elevationOffset);
 		context.lineTo(h1, h2);
-		context.lineTo(h1, h1 + h2 + elevation);
-		context.lineTo(h1 + h1, h1 + elevation);
+		context.lineTo(h1, h1 + h2 + elevationOffset);
+		context.lineTo(h1 + h1, h1 + elevationOffset);
 		context.lineTo(h1 + h1, h2);
 		context.closePath();
 
 		context.fill();
 		context.stroke();
+
+		if (elevation) {
+			for (var i = 0; i < elevation; i++) {
+				this._context.drawImage(image, 0, h2 + (i * h2 / 2) );
+			}
+		}
 	},
 
 	_renderBorder: function (context) {
 		var h1 = this.scaledTileSize,
 			h2 = this.scaledTileSize / 2,
 			context = this._context,
-			elevation = this.elevationOffset;
+			elevation = this.elevation;
 
-		context.fillStyle = "transparent";
 		context.lineWidth = this.lineWidth;
 		context.strokeStyle = this.lineColor;
 		context.globalAlpha = 0.25;
 
 
+		// top
 		context.beginPath();
 		context.moveTo(0, h2);
 		context.lineTo(h1 + 1, h1 + 1);
 		context.lineTo(h1 + h1 + 1, h2 + 1);
 		context.lineTo(h1, 0);
+		context.lineTo(0, h2);
 		context.closePath();
-
-		context.fill();
 		context.stroke();
+		// lateral
+		// if elevation
+		
+		if (elevation) {
+			context.beginPath();
+			context.moveTo(0, h2);
+			context.lineTo(0, h2 + ((h2 / 2) * elevation));
+			context.lineTo(h1, h2 + h2 + ((h2 / 2) * elevation));
+			context.lineTo(h1, h2 + h2 );
+			context.moveTo(h1, h2 + h2 + 1 + ((h2 / 2) * elevation));
+			context.lineTo(h1 + h1 + 1, h2 + ((h2 / 2) * elevation));
+			context.lineTo(h1 + h1 + 1, h2);
+			context.stroke();
+		}
 
 		context.globalAlpha = 1;
 	},
