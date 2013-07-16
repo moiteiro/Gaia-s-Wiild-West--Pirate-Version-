@@ -391,7 +391,7 @@ var BattleField = klass({
 
 		if (this._forceRender) {
 			this.renderTerrain();
-			// this.renderStaticObjects();
+			this.renderStaticObjects();
 		}
 		this._forceRender = false;
 	},
