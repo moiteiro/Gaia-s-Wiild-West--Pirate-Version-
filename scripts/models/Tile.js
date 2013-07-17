@@ -9,7 +9,7 @@ var Tile = klass({
 	_context: "",
 	_staticIndex: 1,
 
-	empty: false,			// stores if the tile must be render or not.
+	visble: true,			// stores if the tile must be render or not.
 	tileSize: 0,
 	scaledTileSize: 0,
 	x: 0,					// integer that represents x position em battlefield map array.
@@ -36,9 +36,7 @@ var Tile = klass({
 	initialize: function (configs) {
 		var pos;
 
-		if (configs) {
-			Object.extend(this, configs);
-		}
+		this.extend(configs);
 
 		var viewport = $('viewport'),
 			canvas = document.createElement("canvas"),
@@ -46,14 +44,20 @@ var Tile = klass({
 			style = canvas.style;
 
 		viewport.appendChild(canvas);
-		canvas.width = this.scaledTileSize * 2 + 2;
-		canvas.height = this.scaledTileSize * 1.5 + 2 + 1000; /// TODO!!! esse calculo de ser feito de acordo com a elevacao.,
 		canvas.setAttribute("data-name", "tile")
 		style.zIndex = this.zIndex;
 
 		this._canvas = canvas;
 		this._context = context;
 
+	},
+
+	extend: function (configs) {
+		if (configs) {
+			Object.extend(this, configs);
+		}
+
+		this._setDimensions();
 	},
 
 	/**
@@ -82,7 +86,7 @@ var Tile = klass({
 		this.findTileCenter(dx, dy);
 		this.elevationOffset = this.elevation * this.scaledTileSize / 4;
 
-		if (!this.empty) {
+		if (this.visble) {
 			this._renderSubsoil(context, subsoilTexture);
 			this._renderTerrain(context, terrainTexture);
 			this._renderBorder(context);
@@ -166,7 +170,13 @@ var Tile = klass({
 		context.globalAlpha = 1;
 	},
 
+	_setDimensions: function () {
+		this.elevationOffset = this.elevation * this.scaledTileSize / 4;
+		this._canvas.width = this.scaledTileSize * 2 + 2;
+		this._canvas.height = this.scaledTileSize * 1.5 + 2 + this.elevationOffset;
+	},
+
 	_calculateZIndex: function () {
 		this._canvas.style.zIndex = this.zIndex = (this.x * 10) + this.y + this._staticIndex;
-	},
+	}
 });

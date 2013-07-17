@@ -22,11 +22,16 @@ var TilePool = klass({
 			this._addTile();
 		}
 
-		return this._tileIndex++;
+		this._tileIndex++;
+		return this._tilePool[this._tileIndex];
 	},
 
 	killTile: function () {
 		this._tileIndex = this._tileIndex === 0 ? 0 : --this._tileIndex;
+	},
+
+	reset: function () {
+		this._tileIndex = 0;
 	},
 
 	/*

@@ -15,6 +15,7 @@ require.config({
 		GameController: 'models/GameController',
 		Layer: 'models/Layer',
 		Tile: 'models/Tile',
+		TilePool: 'models/TilePool',
 		Resource: 'models/Resource',
 		Entity: 'models/Entity',
 		EntityPool: 'models/EntityPool',
@@ -32,6 +33,7 @@ require.config({
 		'Screen': ['Core', 'Events', 'Legacy'],
 
 		'Tile': ['Core', 'Events', 'Legacy'],
+		'TilePool': ['Tile'],
 		'Resource': ['Core', 'Events', 'Legacy'],
 		'BattleField': ['Resource'],
 		'App': ['BattleField']
@@ -39,6 +41,6 @@ require.config({
 
 });
 
-define(['App', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'Resource', 'Screen' /*'jQuery'*/], function () {
+define(['App', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'TilePool', 'Resource', 'Screen' /*'jQuery'*/], function () {
 
 });
