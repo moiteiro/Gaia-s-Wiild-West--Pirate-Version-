@@ -23,6 +23,7 @@ var Tile = klass({
 	// textures
 	terrain: '',
 	subsoil: '',
+	undergroud: '',
 
 
 	// mouse states
@@ -82,11 +83,12 @@ var Tile = klass({
 		};
 	},
 
-	render: function (context, terrainTexture, subsoilTexture, dx, dy) {
+	render: function (context, terrainTexture, subsoilTexture, undergroudTexture, dx, dy) {
 		this.findTileCenter(dx, dy);
 		this.elevationOffset = this.elevation * this.scaledTileSize / 4;
 
 		if (this.visble) {
+			this._renderUnderground(context, undergroudTexture);
 			this._renderSubsoil(context, subsoilTexture);
 			this._renderTerrain(context, terrainTexture);
 			this._renderBorder(context);
@@ -109,27 +111,22 @@ var Tile = klass({
 			elevation = this.elevation,
 			elevationOffset = this.elevationOffset;
 
-		context.lineWidth = 0.5;
-		context.fillStyle = '#986532';
-
-		context.beginPath();
-		context.moveTo(0, h2);
-		context.lineTo(0, h1 + elevationOffset); // h1 agora deve ser setado de acordo com a elevation.
-		context.lineTo(h1, h1 + h2 + elevationOffset);
-		context.lineTo(h1, h2);
-		context.lineTo(h1, h1 + h2 + elevationOffset);
-		context.lineTo(h1 + h1, h1 + elevationOffset);
-		context.lineTo(h1 + h1, h2);
-		context.closePath();
-
-		context.fill();
-		context.stroke();
-
 		if (elevation) {
 			for (var i = 0; i < elevation; i++) {
 				this._context.drawImage(image, 0, h2 + (i * h2 / 2) );
 			}
 		}
+	},
+
+	_renderUnderground: function (context, image) {
+
+		var h1 = this.scaledTileSize,
+			h2 = Math.floor(this.scaledTileSize / 2),
+			context = this._context,
+			elevation = this.elevation,
+			elevationOffset = Math.floor(this.elevationOffset);
+
+		this._context.drawImage(image, 0, h2 + elevationOffset);
 	},
 
 	_renderBorder: function (context) {
@@ -173,7 +170,7 @@ var Tile = klass({
 	_setDimensions: function () {
 		this.elevationOffset = this.elevation * this.scaledTileSize / 4;
 		this._canvas.width = this.scaledTileSize * 2 + 2;
-		this._canvas.height = this.scaledTileSize * 1.5 + 2 + this.elevationOffset;
+		this._canvas.height = this.scaledTileSize * 2 + 2 + this.elevationOffset;
 	},
 
 	_calculateZIndex: function () {

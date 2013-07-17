@@ -146,8 +146,9 @@ var BattleField = klass({
 					type: 0,
 					terrain: terrainType,
 					subsoil: terrainType, // make this random like terrain
+					underground: 0,
 					scaledTileSize: this.scaledTileSize
-				}
+				};
 
 
 				this.map[y][x] = this.tilesPool.getTile();
@@ -351,8 +352,10 @@ var BattleField = klass({
 		var context = this.terrainLayer.context,
 			terrainNames = this.resources.resourcesType.terrain,
 			subsoilNames = this.resources.resourcesType.subsoil,
+			undergroundNames = this.resources.resourcesType.underground,
 			terrains = this.resources.terrainElems,
 			subsoils = this.resources.subsoilElems,
+			undergrounds = this.resources.undergroundElems,
 			width = this.width,
 			height = this.height,
 			map = this.map,
@@ -367,7 +370,8 @@ var BattleField = klass({
 				tile = map[y][x];
 				terrainTexture = terrains[terrainNames[tile.terrain]];
 				subsoilTexture = subsoils[subsoilNames[tile.subsoil]];
-				tile.render(context, terrainTexture, subsoilTexture, this.dx, this.dy);
+				undergroundTexture = undergrounds[undergroundNames[tile.underground]];
+				tile.render(context, terrainTexture, subsoilTexture, undergroundTexture, this.dx, this.dy);
 			}
 		}
 	},

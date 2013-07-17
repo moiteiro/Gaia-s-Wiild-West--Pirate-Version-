@@ -23,10 +23,10 @@ var Controls = klass({
 			Object.extend(this, configs);
 		}
 
-		utils.addListener(document.body, 'click', this.handleClick.bind(this));
-		utils.addListener(document.body, 'mousedown', this.handleMouseDown.bind(this));
-		utils.addListener(document.body, 'mousedown', this.handleMouseUp.bind(this));
-		utils.addListener(document.body, 'mousemove', this.handleMouseMove.bind(this));
+		// utils.addListener(document.body, 'click', this.handleClick.bind(this));
+		// utils.addListener(document.body, 'mousedown', this.handleMouseDown.bind(this));
+		// utils.addListener(document.body, 'mousedown', this.handleMouseUp.bind(this));
+		// utils.addListener(document.body, 'mousemove', this.handleMouseMove.bind(this));
 	},
 
 	setBattleFieldAttributes: function (obj) {
