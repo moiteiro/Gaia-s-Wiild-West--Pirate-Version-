@@ -278,8 +278,8 @@ var BattleField = klass({
 			index,
 			object,
 			objectIndex,
-			totalResources = this.resources.totalResources,
 			nonWalkable = this.resources.resourcesType.nonWalkable,
+			totalResources = nonWalkable.length,
 			resources = this.resources.elems,
 			amount = this.resources.resourcesType.amount;
 
@@ -338,7 +338,6 @@ var BattleField = klass({
 			// REMOVER ISSO DAQUI: Inserir dentro da funcao de criacao de montanhas a ser criada.
 			object.setElevationOffset(this.map[object.coordY][object.coordX].elevationOffset);
 
-			
 			object.forceRender();
 		}
 	},
@@ -452,5 +451,9 @@ var BattleField = klass({
 
 		this._forceRender = true;
 	},
+
+	over: function () {
+		// implemente o fim da batalha.
+	}
 
 });

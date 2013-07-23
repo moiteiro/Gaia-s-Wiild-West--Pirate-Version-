@@ -86,12 +86,17 @@ var GWW = klass({
 		switch (curState) {
 
 		case states.BATTLE_NEW:
-			this.gameController.setState('BATTLE');
+			if (this.resources.isReady()) {
+				console.log('ready to render');
+				this.gameController.setState('BATTLE');
+			}
 			break;
 
 		case states.BATTLE:
 			if (this.battleField.over()) {
 				this.gameController.set('BATTLE_END');
+			} else {
+				this.battleField.render(this.loopFrameCount);
 			}
 			break;
 		}
@@ -99,15 +104,7 @@ var GWW = klass({
 
 	render: function () {
 		this.update();
-
-		var context = this.context,
-			canvas = this.canvas;
-
-		// canvas.width = canvas.width; // clears the canvas
-		// context.clearRect(0,0, canvas.width, canvas.height)
-
-		this.battleField.setTileCursorHover(this.controls.getMapMouseCoord());
-		this.battleField.render(this.loopFrameCount);
+		
 	}
 });
 

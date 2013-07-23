@@ -22,17 +22,20 @@ var Resource = klass({
 	undergroundElems: [],
 	elems: [],
 
-	totalResources: 0,
+	totalResources: 14,
 	totalResourcesLoaded: 0,
+	_ready: false,
 
 	initialize: function (configs) {
 		if (configs) {
 			Object.extend(this, configs);
 		}
-
-		this.totalResources = this.resourcesType.nonWalkable.length + this.resourcesType.walkable.length;
-
 		this.loadAllResources();
+	},
+
+	// carrega uma nova lista de images.
+	loadNewBiome: function () {
+
 	},
 
 	loadAllResources: function () {
@@ -43,6 +46,7 @@ var Resource = klass({
 			underground = this.resourcesType.underground,
 			length,
 			i;
+
 
 		length = nonWalkable.length;
 
@@ -73,30 +77,32 @@ var Resource = klass({
 
 	loadResource: function (name, elemsArray) {
 		var image = new Image();
-		var callback = this.resourceLoaded;
+		var that = this;
 
 		image.onload = function () {
-			// once the image is loaded:
 			this.width = this.naturalWidth;
 			this.height = this.naturalHeight;
+			that.resourceLoaded();
 
-			callback();
-		};
+		}.bind(that);
 
 		image.src = this.path + name + ".png";
 		this.elems[name] = image;
 		this[elemsArray][name] = image;
 	},
 
-	resourceLoaded: function (callback) {
-
+	resourceLoaded: function () {
 		this.totalResourcesLoaded++;
-
 		if (this.totalResources === this.totalResourcesLoaded) {
-			if (callback) {
-				callback();
-			}
+			this._ready = true;
+			console.log('images loaded');
+			return;
 		}
+		console.log('loading image')
+	},
+
+	isReady: function () {
+		return this._ready;
 	}
 
 });

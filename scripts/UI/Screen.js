@@ -44,7 +44,7 @@ var Screen = klass({
 });
 
 var screenResize = utils.addListener(window, 'screenResize', function () {
-	console.log('window resize');
+	console.log('implement window resize');
 });
 
 var screenResize = new CustomEvent('screenResize', {

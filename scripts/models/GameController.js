@@ -38,9 +38,7 @@ var GameController = klass({
 	},
 
 	getState: function () {
-		return {
-			state: this.state._current
-		};
+		return this.state._current;
 	},
 
 	getAllStates: function () {
@@ -53,8 +51,9 @@ var GameController = klass({
 	 * @return {[type]}       [description]
 	 */
 	setState: function (STATE) {
+
 		if (Object.prototype.hasOwnProperty.call(this.state, STATE)) {
-			this.state._current = this.state.STATE;
+			this.state._current = this.state[STATE];
 		} else {
 			this.state._current = this.state.CRASHED;
 			throw "GameController: this state doesn't exists (" + STATE + ")";
