@@ -21,9 +21,8 @@ var TilePool = klass({
 		if (this._isFull()) {
 			this._addTile();
 		}
-
-		this._tileIndex++;
-		return this._tilePool[this._tileIndex];
+		
+		return this._tilePool[++this._tileIndex];
 	},
 
 	killTile: function () {

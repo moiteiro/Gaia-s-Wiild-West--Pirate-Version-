@@ -102,8 +102,7 @@ var GWW = klass({
 	},
 
 	render: function () {
-		this.update();
-		
+		this.update();	
 	}
 });
 

@@ -58,23 +58,24 @@ var Controls = klass({
 		};
 	},
 
-	_cursorOnTheMap: function (clientX, clientY) {
-		var col = (clientY - this.battleField.offsetY) * 2;
-		col = ((this.battleField.offsetX + col) - clientX) / 2;
+	// TODO: precisa ser alterado para o novo formato do tiles
+	// _cursorOnTheMap: function (clientX, clientY) {
+	// 	var col = (clientY - this.battleField.offsetY) * 2;
+	// 	col = ((this.battleField.offsetX + col) - clientX) / 2;
 
-		var row = ((clientX + col) - this.scaledTileSize) - this.battleField.offsetX + 63;
+	// 	var row = ((clientX + col) - this.scaledTileSize) - this.battleField.offsetX + 63;
 
-		row = Math.floor(row / this.scaledTileSize);
-		col = Math.floor(col / this.scaledTileSize);
+	// 	row = Math.floor(row / this.scaledTileSize);
+	// 	col = Math.floor(col / this.scaledTileSize);
 
-		if (row >= 0 && col >= 0 && row <= (this.battleField.width - 1) && col <= (this.battleField.height - 1)) {
-			return {
-				x: row,
-				y: col
-			};
-		}
-		return;	
-	},
+	// 	if (row >= 0 && col >= 0 && row <= (this.battleField.width - 1) && col <= (this.battleField.height - 1)) {
+	// 		return {
+	// 			x: row,
+	// 			y: col
+	// 		};
+	// 	}
+	// 	return;	
+	// },
 	
 	_startScrollMap: function (x, y) {
 		var startDragX = x,

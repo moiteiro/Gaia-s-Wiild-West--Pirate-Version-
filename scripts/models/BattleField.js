@@ -75,8 +75,6 @@ var BattleField = klass({
 
 		var width = this.width,
 			height = this.height, 
-			widthScaled = width * this.scaledTileSize + (1.5 * this.scaledTileSize), // adding some extra area for security
-			heightScaled = height * this.scaledTileSize + (1.5 * this.scaledTileSize),
 			mapSize = width * height,
 			minPlayableTiles = 60,
 			i = true;
@@ -95,24 +93,8 @@ var BattleField = klass({
 			}
 		}
 
-		widthScaled += this.dx;
-		heightScaled += this.dy;
-
-		this.subsoilLayer.resize(widthScaled, heightScaled);
-		this.subsoilLayer.translate(this.dx, this.dy);
-		this.subsoilLayer.isometricMode();
-
-		this.gridLayer.resize(widthScaled, heightScaled);
-		this.gridLayer.translate(this.dx, this.dy);	
-		this.gridLayer.isometricMode();
-
-		this.navLayer.resize(widthScaled, heightScaled);
-		this.navLayer.translate(this.dx, this.dy);
-		this.navLayer.isometricMode();
-
-		this.terrainLayer.resize(widthScaled, heightScaled);
-
 		this.setNonWalkableTiles();
+		this.forceRender();
 	},
 
 	createMapDimensions: function () {
@@ -277,18 +259,19 @@ var BattleField = klass({
 			tile,
 			index,
 			object,
-			objectIndex,
 			nonWalkable = this.resources.resourcesType.nonWalkable,
 			totalResources = nonWalkable.length,
 			resources = this.resources.elems,
 			amount = this.resources.resourcesType.amount;
 
+		this.objectsPool.reset();
+
 		for (i =  amount - 1; i >= 0; i--) {
 
 			index = Math.floor(Math.random() * totalResources);
 			pos = this.getARandomMapPosition();
-			objectIndex = this.objectsPool.getEntity();
-			object = this.objectsPool._entityPool[objectIndex];
+
+			object = this.objectsPool.getEntity();
 			tile = this.map[pos.y][pos.x];
 
 			object.setImage(resources[nonWalkable[index]]);
@@ -334,7 +317,6 @@ var BattleField = klass({
 
 		for (i = 0; i < amount; i++) {
 			object = this.objectsPool._entityPool[i];
-
 			// REMOVER ISSO DAQUI: Inserir dentro da funcao de criacao de montanhas a ser criada.
 			object.setElevationOffset(this.map[object.coordY][object.coordX].elevationOffset);
 
@@ -362,7 +344,6 @@ var BattleField = klass({
 			terrainTexture,
 			x,
 			y;
-
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
 
@@ -375,30 +356,31 @@ var BattleField = klass({
 		}
 	},
 
+	// TODO: verificar novo uso para essa funcao
 	/**
 	 * Renders the layer where the mouse interacts. It's used either to show the mouse selection.
 	 * @return void
 	 */
-	renderNavLayer: function () {
-		var context = this.navLayer.context,
-			width = this.width,
-			height = this.height,
-			tileSize = this.tileSize,
-			tile = this._tilehovered;
+	// renderNavLayer: function () {
+	// 	var context = this.navLayer.context,
+	// 		width = this.width,
+	// 		height = this.height,
+	// 		tileSize = this.tileSize,
+	// 		tile = this._tilehovered;
 
-		if (tile.x !== null) {
-			context.clearRect(tile.oldX * tileSize, tile.oldY * tileSize, tileSize, tileSize);
-			if (this.map[tile.y][tile.x].type === 5) {
-				context.fillStyle = "transparent";
-			} else {
-				context.fillStyle = "rgba(0, 0, 255, 0.3)";
-			}
-			context.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
-		} else if (tile.x === null && tile.oldX !== null) {
-			// the last tile
-			context.clearRect(tile.oldX * tileSize, tile.oldY * tileSize, tileSize, tileSize);
-		}
-	},
+	// 	if (tile.x !== null) {
+	// 		context.clearRect(tile.oldX * tileSize, tile.oldY * tileSize, tileSize, tileSize);
+	// 		if (this.map[tile.y][tile.x].type === 5) {
+	// 			context.fillStyle = "transparent";
+	// 		} else {
+	// 			context.fillStyle = "rgba(0, 0, 255, 0.3)";
+	// 		}
+	// 		context.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+	// 	} else if (tile.x === null && tile.oldX !== null) {
+	// 		// the last tile
+	// 		context.clearRect(tile.oldX * tileSize, tile.oldY * tileSize, tileSize, tileSize);
+	// 	}
+	// },
 
 
 	render: function (frame) {
@@ -409,6 +391,10 @@ var BattleField = klass({
 			this.renderStaticObjects();
 		}
 		this._forceRender = false;
+	},
+
+	forceRender: function () {
+		this._forceRender = true;
 	},
 
 	setTileCursorHover: function (coord) {

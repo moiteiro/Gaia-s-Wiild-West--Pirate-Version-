@@ -22,11 +22,15 @@ var EntityPool = klass({
 			this._addEntity();
 		}
 
-		return this._entityIndex++;
+		return this._entityPool[this._entityIndex++];
 	},
 
 	killEntity: function () {
 		this._entityIndex = this._entityIndex === 0 ? 0 : --this._entityIndex;
+	},
+
+	reset: function () {
+		this._entityIndex = 0;
 	},
 
 	/*
