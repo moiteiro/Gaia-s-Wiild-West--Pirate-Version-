@@ -87,7 +87,6 @@ var GWW = klass({
 
 		case states.BATTLE_NEW:
 			if (this.resources.isReady()) {
-				console.log('ready to render');
 				this.gameController.setState('BATTLE');
 			}
 			break;

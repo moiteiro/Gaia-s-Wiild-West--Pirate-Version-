@@ -8,8 +8,8 @@ var BattleField = klass({
 	screenHeight: 0,
 	width: 10,					// amount of squares in X orientation
 	height: 10,					// amout of squres in Y orientation
-	maxSize: 10,				// max size for width and height
-	minSize: 10,				// min size for width and height
+	maxSize: 14,				// max size for width and height
+	minSize: 14,				// min size for width and height
 	offsetX: 430,				// to store de original values of the first Tile 0,0
 	offsetY: 150,				// to store de original values of the first Tile 0,0
 	translatedX: 0,				// store the move on x-axis

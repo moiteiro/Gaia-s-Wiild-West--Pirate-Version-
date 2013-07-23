@@ -95,10 +95,8 @@ var Resource = klass({
 		this.totalResourcesLoaded++;
 		if (this.totalResources === this.totalResourcesLoaded) {
 			this._ready = true;
-			console.log('images loaded');
 			return;
 		}
-		console.log('loading image')
 	},
 
 	isReady: function () {
