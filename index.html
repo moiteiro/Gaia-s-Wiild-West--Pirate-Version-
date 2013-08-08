@@ -19,12 +19,22 @@
 				top:0;
 				left:0;
 			}
+
+			.div-tile {
+				display: block;
+				background: transparent;
+				position:absolute;
+			}
 		</style>
 		<script src='scripts/libs/require.js' data-main='scripts/boot.js'></script>
 	</head>
 	<body>
 		<div id='viewport'>
 			<canvas id="canvas" style='z-index:1000' width="" height="" >
+			</canvas>
+
+			<!-- helper for rendering tiles -->
+			<canvas id="tile_render" style='z-index:-1' width="" height="" >
 			</canvas>
 		</div>
 	</body>

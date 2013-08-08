@@ -8,8 +8,8 @@ var BattleField = klass({
 	screenHeight: 0,
 	width: 10,					// amount of squares in X orientation
 	height: 10,					// amout of squres in Y orientation
-	maxSize: 14,				// max size for width and height
-	minSize: 14,				// min size for width and height
+	maxSize: 10,				// max size for width and height
+	minSize: 10,				// min size for width and height
 	offsetX: 430,				// to store de original values of the first Tile 0,0
 	offsetY: 150,				// to store de original values of the first Tile 0,0
 	translatedX: 0,				// store the move on x-axis
@@ -33,9 +33,6 @@ var BattleField = klass({
 
 	frameCount: 0,
 
-	subsoilLayer: "",
-	terrainLayer: "",
-	gridLayer: "",
 	navLayer: "",  // layer that response to the mouse events
 
 	objectsPool: "",
@@ -51,9 +48,6 @@ var BattleField = klass({
 		this.objectsPool = new EntityPool();
 		this.tilesPool = new TilePool();
 
-		this.subsoilLayer = new Layer({zIndex: 1, isometric: true, name: "battlefield_subsoil"});
-		this.terrainLayer = new Layer({zIndex: 2, name: "battlefield_terrain"});
-		this.gridLayer = new Layer({zIndex: 3, isometric: true, name: "battlefield_grid"});
 		this.navLayer = new Layer({zIndex: 4, isometric: true, name: "battlefield_nav"});
 
 		this.generateArena();
@@ -93,6 +87,7 @@ var BattleField = klass({
 			}
 		}
 
+		this.generateRelief();
 		this.setNonWalkableTiles();
 		this.forceRender();
 	},
@@ -115,6 +110,7 @@ var BattleField = klass({
 
 		this.tilesPool.reset();
 
+		// TODO: esse conteudo pode ser transferido para uma funcao "preenche tiles"
 		for (y = this.height - 1; y >= 0; y--) {
 			this.map[y] = new Array(this.height);
 			for (x = this.width - 1; x >= 0; x--) {
@@ -124,7 +120,7 @@ var BattleField = klass({
 				tile = {
 					x: x,
 					y: y,
-					elevation: Math.floor(Math.random() * 2),
+					elevation: 0,
 					type: 0,
 					terrain: terrainType,
 					subsoil: terrainType, // make this random like terrain
@@ -132,10 +128,8 @@ var BattleField = klass({
 					scaledTileSize: this.scaledTileSize
 				};
 
-
 				this.map[y][x] = this.tilesPool.getTile();
 				this.map[y][x].extend(tile);
-
 			}
 		}
 
@@ -223,7 +217,6 @@ var BattleField = klass({
 	 * @return {object} 
 	 */
 	getARandomMapPosition: function () {
-
 		var x,
 			y,
 			i = true,
@@ -305,6 +298,52 @@ var BattleField = klass({
 	},
 
 
+	generateRelief: function () {
+		// var x = Math.floor(Math.random() * this.width),
+		// 	y = Math.floor(Math.random() * this.height),
+		// 	maxElevation = 5,
+		// 	elevation;
+
+		// elevation = Math.floor(Math.acos(Math.random()) * 180 / Math.PI);
+		// elevation = Math.round(elevation * maxElevation / 90);
+		
+		var elevation = 4
+		var pos = 4;
+		this.map[pos][pos].elevation = elevation;
+
+		// this.temp(this.map[pos][pos], 4);
+	},
+
+	temp: function (tile) {
+		var x, y,
+			elevation,
+			xBegin = (tile.x - 1) < 0 ? 0 : tile.x - 1,
+			xEnd = (tile.x + 1) > (this.width - 1) ? this.width - 1 : tile.x + 1,
+			yBegin = (tile.y - 1) < 0 ? 0 : tile.y - 1,
+			yEnd = (tile.y + 1) > (this.height - 2) ? this.height - 1 : tile.y + 1;
+
+		if (tile.elevation === 0)
+			return;
+
+		for (y = yBegin; y <= yEnd; y++) {
+			for(x = xBegin; x <= xEnd; x++) {
+				if (this.map[y][x] !== tile && this.map[y][x].elevation === 0) {
+
+					elevation = Math.abs(tile.elevation - (Math.floor(Math.random() * 3)));
+					console.log(elevation)
+					this.map[y][x].elevation = elevation;
+
+					if (this.map[y][x].elevation !== 0) {
+						this.temp(this.map[y][x]);
+					}
+				}
+			}
+		}
+
+		// console.log("x: " + x + " xEnd: " + xEnd + " y: " + y + " yEnd: " + yEnd);
+
+	},
+
 	/**
 	 * Place the resources images into the battleField
 	 * @return {void}
@@ -330,8 +369,7 @@ var BattleField = klass({
 	 */
 	renderTerrain: function () {
 
-		var context = this.terrainLayer.context,
-			terrainNames = this.resources.resourcesType.terrain,
+		var terrainNames = this.resources.resourcesType.terrain,
 			subsoilNames = this.resources.resourcesType.subsoil,
 			undergroundNames = this.resources.resourcesType.underground,
 			terrains = this.resources.terrainElems,
@@ -351,7 +389,7 @@ var BattleField = klass({
 				terrainTexture = terrains[terrainNames[tile.terrain]];
 				subsoilTexture = subsoils[subsoilNames[tile.subsoil]];
 				undergroundTexture = undergrounds[undergroundNames[tile.underground]];
-				tile.render(context, terrainTexture, subsoilTexture, undergroundTexture, this.dx, this.dy);
+				tile.render(terrainTexture, subsoilTexture, undergroundTexture, this.dx, this.dy);
 			}
 		}
 	},

@@ -66,7 +66,7 @@ var Entity = klass({
 				this._height
 			);
 
-			this._canvas.style.top = this.posY - (this._height) + 16 - this.elevationOffset;
+			this._canvas.style.top = this.posY - (this._height) + 32 - this.elevationOffset;
 			this._canvas.style.left = this.posX - (this._width / 2);
 			this._context.drawImage(this._image, 0,  0);
 		}
