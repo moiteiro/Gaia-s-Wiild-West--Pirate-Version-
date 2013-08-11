@@ -10,6 +10,7 @@ require.config({
 		Core: 'libs/core',
 		Events: 'libs/events',
 		Legacy: 'libs/legacy',
+		Request: 'libs/request',
 
 		BattleField: 'models/BattleField',
 		GameController: 'models/GameController',
@@ -25,6 +26,7 @@ require.config({
 	},
 
 	shim: {
+		'Request': ['Core', 'Legacy'],
 		'Controls': ['Core', 'Events', 'Legacy'],
 		'Entity': ['Core', 'Events', 'Legacy'],
 		'EntityPool': ['Entity'],
@@ -41,6 +43,6 @@ require.config({
 
 });
 
-define(['App', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'TilePool', 'Resource', 'Screen' /*'jQuery'*/], function () {
+define(['App', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'TilePool', 'Request', 'Resource', 'Screen' /*'jQuery'*/], function () {
 
 });

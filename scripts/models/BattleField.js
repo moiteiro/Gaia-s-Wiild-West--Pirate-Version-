@@ -24,12 +24,14 @@ var BattleField = klass({
 	context: null,
 	resources: null,
 
-	_tilehovered: {
-		x: null,
-		y: null,
-		oldX: 0,
-		oldY: 0
-	},
+	// _tilehovered: {
+	// 	x: null,
+	// 	y: null,
+	// 	oldX: 0,
+	// 	oldY: 0
+	// },
+	
+	_JSONMapLoaded: false,
 
 	frameCount: 0,
 
@@ -41,28 +43,20 @@ var BattleField = klass({
 	initialize: function (configs) {
 		if (configs) {
 			Object.extend(this, configs);
-		}
-
-		this.events();
+		}		
 
 		this.objectsPool = new EntityPool();
 		this.tilesPool = new TilePool();
 
 		this.navLayer = new Layer({zIndex: 4, isometric: true, name: "battlefield_nav"});
 
-		this.generateArena();
+		this.loadServerMap();
+		// this.generateArena();
 	},
 
-	getServerMap: function (map) {
-		if (map !== undefined) {
-			this.map = map;
-			this.serverMap = true;
-		} else {
-			throw false;
-			// eh necessario garantir que o map sempre vira do server.
-			// se algo der errado, outra requisicao devera ser feita.
-			// implementar essa parada
-		}
+	loadServerMap: function () {
+		var URL = "http://gaiawildwest/server-side-map.json";
+		getJSON(URL, this._setMap.bind(this));
 	},
 
 	generateArena: function () {
@@ -259,22 +253,22 @@ var BattleField = klass({
 
 		this.objectsPool.reset();
 
-		for (i =  amount - 1; i >= 0; i--) {
+		// for (i =  amount - 1; i >= 0; i--) {
 
-			index = Math.floor(Math.random() * totalResources);
-			pos = this.getARandomMapPosition();
+		// 	index = Math.floor(Math.random() * totalResources);
+		// 	pos = this.getARandomMapPosition();
 
-			object = this.objectsPool.getEntity();
-			tile = this.map[pos.y][pos.x];
+		// 	object = this.objectsPool.getEntity();
+		// 	tile = this.map[pos.y][pos.x];
 
-			object.setImage(resources[nonWalkable[index]]);
-			object.setCoordinates(pos.x, pos.y);
-			object.calculate(this.dx, this.dy, this.scaledTileSize);
+		// 	object.setImage(resources[nonWalkable[index]]);
+		// 	object.setCoordinates(pos.x, pos.y);
+		// 	object.calculate(this.dx, this.dy, this.scaledTileSize);
 
-			tile.type = 5; // that is right!
-		}
+		// 	tile.type = 5; // that is right!
+		// }
 
-		this.setSpecialWalkableTiles();
+		// this.setSpecialWalkableTiles();
 	},
 
 	/**
@@ -307,9 +301,9 @@ var BattleField = klass({
 		// elevation = Math.floor(Math.acos(Math.random()) * 180 / Math.PI);
 		// elevation = Math.round(elevation * maxElevation / 90);
 		
-		var elevation = 4
-		var pos = 4;
-		this.map[pos][pos].elevation = elevation;
+		// var elevation = 4
+		// var pos = 4;
+		// this.map[pos][pos].elevation = elevation;
 
 		// this.temp(this.map[pos][pos], 4);
 	},
@@ -435,12 +429,12 @@ var BattleField = klass({
 		this._forceRender = true;
 	},
 
-	setTileCursorHover: function (coord) {
-		this._tilehovered.oldX = this._tilehovered.x;
-		this._tilehovered.oldY = this._tilehovered.y;
-		this._tilehovered.x = coord.x;
-		this._tilehovered.y = coord.y;
-	},
+	// setTileCursorHover: function (coord) {
+	// 	this._tilehovered.oldX = this._tilehovered.x;
+	// 	this._tilehovered.oldY = this._tilehovered.y;
+	// 	this._tilehovered.x = coord.x;
+	// 	this._tilehovered.y = coord.y;
+	// },
 
 	/**
 	 * Returns all coordinates of the map
@@ -458,26 +452,86 @@ var BattleField = klass({
 		};
 	},
 
-	events: function () {
-		// utils.addListener(window, 'resize', this.eventScreenOnResize.bind(this));
-	},
-
-	eventScreenOnResize: function () {
-		var width, height;
-
-		width = this.screenWidth = document.body.clientWidth;
-		height = this.screenHeight = document.body.clientHeight;
-
-		this.subsoilLayer.resize(width, height);
-		this.terrainLayer.resize(width, height);
-		this.gridLayer.resize(width, height);
-		this.navLayer.resize(width, height);
-
-		this._forceRender = true;
-	},
-
 	over: function () {
 		// implemente o fim da batalha.
-	}
+	},
+
+
+	_setMap: function (map) {
+		if (Array.isArray(map) && Array.isArray(map[0])) {
+			this.height = map.length;
+			this.width = map[0].length;
+
+			this.offsetX = (this.screenWidth / 2) + (this.height - this.width) *  (this.scaledTileSize / 2);
+			this.offsetY = (this.screenHeight / 2) - ((this.scaledTileSize / 2 * this.height) + (this.width - this.height) * this.scaledTileSize / 4);
+
+			this.dx = this.offsetX + this.translatedX;
+			this.dy = this.offsetY + this.translatedY;
+
+			this._populateTiles(map);
+			this.setNonWalkableTiles();
+		}
+		this.forceRender();
+	},
+
+	_populateTiles: function (map) {
+		this.objectsPool.reset();
+		this.tilesPool.reset();
+		this.map = [];
+
+		for (y = 0; y  < this.height; y++) {
+
+			this.map[y] = [];
+
+			for (x = 0; x < this.width; x++) {
+
+				tile = map[y][x];
+
+				this.map[y][x] = this.tilesPool.getTile();
+				this.map[y][x].extend(tile);
+
+				if (this.map[y][x].type === 5 ) {
+					this._setNonWalkableTiles(y, x);
+				}
+			}
+		}
+	},
+
+
+	/**
+	 * Sets tiles that characters cannot walk.
+	 * This tiles can be used to place Resources.
+	 */
+	_setNonWalkableTiles: function (y, x) {
+		var index,
+			object,
+			nonWalkable = this.resources.resourcesType.nonWalkable,
+			totalResources = nonWalkable.length,
+			resources = this.resources.elems;
+
+		index = Math.floor(Math.random() * totalResources);
+
+		object = this.objectsPool.getEntity();
+
+		object.setImage(resources[nonWalkable[index]]);
+		object.setCoordinates(x, y);
+		object.calculate(this.dx, this.dy, this.scaledTileSize);
+	},
+
+	/*************************************
+		Custom Events
+	**************************************/
+	// JSONMapLoaded: new Event('JSONMapLoaded'),
+
+
+
+
+	// eventJSONMapLoaded: function (e) {
+	// 	this._JSONMapLoaded = true;
+	// }
+
+
 
 });
+
+

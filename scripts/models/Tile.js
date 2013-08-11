@@ -60,6 +60,7 @@ var Tile = klass({
 	},
 
 	extend: function (configs) {
+		
 		if (configs) {
 			Object.extend(this, configs);
 		}

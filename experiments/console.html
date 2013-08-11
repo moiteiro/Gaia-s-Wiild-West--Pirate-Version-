@@ -1,0 +1,226 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Console</title>
+		<style>
+			body {
+				margin:0;
+				padding:0;
+				background: #ccc;
+			}
+			#viewport {
+				width: 100%;
+				height: 100%;
+				cursor: url('assets/UI/cursorActive.cur'), url('assets/UI/cursorActive.png'), auto ;
+			}
+
+		</style>
+		<link rel="stylesheet" href="console.css">
+	</head>
+	<body>
+		<div id='viewport'>
+			<div id="console" class=''>
+				<div class="console-panel">
+					<div>
+						<span class='object-name'>Battlefield</span>
+					</div>
+					<div class="console-controllers">
+						<li class='input'>
+							<span class='property-name'>width</span>
+							<div class='property-value'>
+								<input type="text">
+							</div>
+						</li>
+						<li class='input'>
+							<span class='property-name'>height</span>
+							<div class='property-value'>
+								<input type="text">
+							</div>
+						</li>
+						<li class='button'>
+							<span class="property-name"><a href="javascript:void(0)">generate arena</a></span>
+						</li>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	
+
+	<script>
+		if (!Object.keys) {
+			Object.keys = (function () {
+				var hasOwnProperty = Object.prototype.hasOwnProperty,
+					hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
+					dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor' ],
+					dontEnumsLength = dontEnums.length;
+
+				return function (obj) {
+					var result = [],
+						prop,
+						i;
+
+					if ((typeof obj !== 'object' && typeof obj !== 'function') || obj === null) {
+						throw new TypeError("Object.keys called on non-object");
+					}
+
+					for (prop in obj) {
+						if (obj.hasOwnProperty(prop)) {
+							result.push(prop);
+						}
+					}
+
+					if (hasDontEnumBug) {
+						for (i = 0; i < dontEnumsLength; i++) {
+							if (hasOwnProperty.call(obj, dontEnums[i])) {
+								result.push(dontEnums[i]);
+							}
+						}
+					}
+					return result;
+				};
+			}());
+		}
+	</script>
+			
+
+	<script>
+
+		window.onload = initConsole;
+
+
+
+		function initConsole() {
+
+			var Structure = {
+				Battlefield: {
+					width : {
+						controller: "input",
+						type: "integer"
+					},
+					height : {
+						controller: "input",
+						type: "integer"
+					},
+				}
+			};
+
+			createStructure(Structure);
+			addEvents();
+		}
+
+		function createStructure(structure) {
+			var body = document.getElementsByTagName('body')[0],
+				// consoleDiv = document.createElement('div');
+				// consoleDiv.id = "console";
+
+				// body.appendChild(consoleDiv);
+				consoleDiv = document.getElementById('console');
+
+			for (i in structure) {
+				if (structure.hasOwnProperty(i)) {
+					consoleDiv.appendChild(_createPanelTitle(i, structure[i]));
+				}
+			}
+
+		}
+
+		function _createPanelTitle(title, configs) {
+			var consolePanel = E('div', {class: "console-panel"}),
+				consoleControllers = E('div', {class: "console-controllers"}),
+
+				objectNameWrapper = E('div'),
+				objectName = E('span', {class: 'object-name', text: title});
+
+
+			objectNameWrapper.appendChild(objectName);
+			consolePanel.appendChild(objectNameWrapper);
+
+
+			for (o in configs) {
+				if (configs.hasOwnProperty(o)) {
+					consoleControllers.appendChild(_createTweakerController(o, configs[o]));
+				}
+			}
+
+			consolePanel.appendChild(consoleControllers);
+			return consolePanel;
+		}
+
+		function _createTweakerController(title, configs) {
+			var liWrapper = E('li'),
+				propertyName = E('span', {class: "property-name", text: title}),
+				controllerType = "";
+
+			controllerType = liWrapper.className = configs.hasOwnProperty("controller") ? configs.controller : "";
+			liWrapper.appendChild(propertyName);
+
+			switch(controllerType) {
+			case "input":
+				var input = E('input', {type: 'input'});
+				var inputWrapper = E('div', {class: "property-value"});
+
+				inputWrapper.appendChild(input);
+				liWrapper.appendChild(inputWrapper);
+				break;
+			}
+
+			return liWrapper;
+		}
+
+		function E(name, configs) {
+			// text, class, id, title, type and name for inputs.
+			var element = document.createElement(name);
+			
+			if (Object.prototype.toString.call(configs) === "[object Object]") {
+				element.className = configs.hasOwnProperty("class") ? configs.class : "";
+				element.id = configs.hasOwnProperty("id") ? configs.id : "";
+
+				if (configs.hasOwnProperty("text")) {
+					element.appendChild(document.createTextNode(configs.text));
+				}
+			}
+
+			return element;
+		}
+
+		function addEvents() {
+			var spans = document.getElementsByTagName('span');
+			for (i = 0; i < spans.length; i++) {
+				if (spans[i].getAttribute('class') === 'object-name') {
+					// adding listener
+					spans[i].addEventListener('click', togglePanel, false);
+				}
+			}
+		}
+
+		function togglePanel (e) {
+			var elem = e.target, // verificar browser compatibility
+				parent = elem.parentNode,
+				sibling = parent.nextSibling;
+				className = "";
+
+			while(sibling && sibling.nodeType != 1) {
+				sibling = sibling.nextSibling;
+			}
+
+			className = sibling.getAttribute('class');
+
+			if (className.indexOf('console-controllers') > -1) {
+				if (className.indexOf('close') > -1) {
+					className = className.replace('close', '');
+				} else {
+					className += " close";
+				}
+			}
+			sibling.className = className;
+		}
+	</script>
+</html>
+
+<li class='input'>
+	<span class='property-name'>width</span>
+	<div class='property-value'>
+		<input type="text">
+	</div>
+</li>

@@ -89,15 +89,15 @@ if (!Object.keys) {
 	}());
 }
 
-// layers
-// 	terrain
-// 	mouse selection, ranges
-// 	static-objects (rocks, walls, houses) - each object will have their own canvas.
-// 	nostatic-ojects (tree, flowers, flags, bunfire)
-// 	interactible objects
-// 	chars (animations, skills, spells)
-// 	dialogs
-// 	hud
+/********************
+	Requests
+********************/
 
-// fazer um pool de layers para que cada um possa ser atualizado de acordo com a contagem geral dos frames.
-// cada classe (static e nostatic-ojects) podem ter um pool seperado e mais um para guardar quem nao esta sendo usado.
+if (!window.httpRequest) {
+	var httpRequest;
+	if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+	    httpRequest = new XMLHttpRequest();
+	} else if (window.ActiveXObject) { // IE 8 and older
+	    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+}

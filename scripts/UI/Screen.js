@@ -24,7 +24,6 @@ var Screen = klass({
 		// fazer todos os calculos de posicionamento do canvas com relacao ao body
 		// ffazer os calulos de offset atraves de todos os parents para descobrir o offset do click do mouse
 		//this._calculateOffset();
-		console.log('implement do doResize');
 	},
 
 	_setFullScreen: function () {
@@ -42,15 +41,3 @@ var Screen = klass({
 		}
 	}
 });
-
-var screenResize = utils.addListener(window, 'screenResize', function () {
-	console.log('implement window resize');
-});
-
-var screenResize = new CustomEvent('screenResize', {
-	detail: {
-		username: "moiteiro"
-	}
-});
-
-window.dispatchEvent(screenResize);
