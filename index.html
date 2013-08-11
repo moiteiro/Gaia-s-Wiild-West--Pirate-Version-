@@ -30,88 +30,143 @@
 			/**************************
 				Console
 			**************************/
-			#console {
-				font-family: sans-serif;
-				padding-top: 10px;
-				z-index: 10000;
-				position: absolute;
-				right:10;
-				top: 10;
-				width: 400px;
-				height: 200px;
-				background: black;
-				box-shadow: 2px 2px 2px rgba(0,0,0,.4);
-			}
 
-			#console.close {
-				display: none;
-			}
+#console {
+	font-family: sans-serif;
+	z-index: 10000;
+	position: absolute;
+	right:10;
+	top: 10;
+	width: 400px;
+	background: rgb(10, 10, 10);
+	box-shadow: 2px 2px 2px rgba(0,0,0,.4);
+}
 
-			#console li {
-				width: 95%;
-				height: 23px;
-				padding: 3px 3px 3px 8px;
-				display: block;
-				list-style: none;
-				border-left: 4px solid green;
-				border-bottom: 1px solid rgb(30, 30, 30)
-			}
+#console a, #console a:hover, #console a:visited, #console a:active {
+	color: white;
+	text-decoration: none;
+}
 
-			#console li:hover {
-				background: rgb(20, 20, 20)
-			}
 
-			#console li span.property-name {
-				color:white;
-				font-size: 12px;
-				width: 40%;
-				float:left;
-				line-height: 23px;
-			}
+.console-panel span.object-name{
+	margin-bottom: 3px;
+	background: rgb(25, 25, 25);
+	color:rgb(200, 200, 220);
+	font-size: 12px;
+	display: block;
+	padding: 7px;
+	text-align: center;
+	text-transform: uppercase;
+	cursor: pointer;
+	font-weight: bold;
+	box-shadow: inset 0px 1px 1px rgba(255, 255, 255, .1);
 
-			#console li .property-value {
-				float:left;
-				width: 60%;
-			}
+	  -webkit-user-select: none;
+	   -khtml-user-select: none;
+		 -moz-user-select: none;
+		   -o-user-select: none;
+			  user-select: none; 
+}
 
-			#console li .property-value input {
-				margin-left: 5px;
-				padding: 3px;
-				width: 50%;
-				float:right;
-				border: none;
-				background: rgb(20, 20, 20);
-				color: rgb(47, 161, 214);
-			}
+.console-panel:first-child {
+	margin-top: 10px;
+}
 
-			#console li:hover .property-value input {
-				background: rgb(40, 40, 40);
-			}
+.console-panel span.object-name:hover {
+	color:white;
+}
 
+
+#console .console-controllers.close {
+	display: none;
+}
+
+#console li {
+	width: 95%;
+	height: 23px;
+	padding: 3px 3px 3px 8px;
+	display: block;
+	list-style: none;
+	border-left: 4px solid rgb(151, 184, 57);
+	border-bottom: 1px solid rgb(30, 30, 30)
+}
+
+#console .console-controllers li:first-child {
+	border-top: 1px solid rgb(30, 30, 30);
+}
+
+#console li.button {
+	border-left: 4px solid rgb(58, 82, 164);
+}
+
+#console li:hover, #console li.button:hover {
+	background: rgb(20, 20, 20);
+}
+
+#console li span.property-name {
+	cursor: default;
+	color:white;
+	font-size: 12px;
+	width: 40%;
+	float:left;
+	line-height: 23px;
+}
+
+#console li.button span.property-name {
+	width: 100%;
+}
+
+#console li.button span.property-name a {
+	display: block;
+	width: 100%;
+}
+
+#console li .property-value {
+	float:left;
+	width: 60%;
+}
+
+#console li .property-value input {
+	margin-left: 5px;
+	padding: 3px;
+	width: 40%;
+	float:right;
+	border: none;
+	background: rgb(20, 20, 20);
+	color: rgb(151, 184, 57);
+}
+
+#console li:hover .property-value input {
+	background: rgb(40, 40, 40);
+}
 		</style>
 		<script src='scripts/libs/require.js' data-main='scripts/boot.js'></script>
 	</head>
 	<body>
 		<div id='viewport'>
 			<div id="console" class=''>
-				<li>
-					<span class='property-name'>width</span>
-					<div class='property-value'>
-						<input type="text">
+				<div class="console-panel">
+					<div>
+						<span class='object-name'>Battlefield</span>
 					</div>
-				</li>
-				<li>
-					<span class='property-name'>height</span>
-					<div class='property-value'>
-						<input type="text">
+					<div class="console-controllers">
+						<li class='input'>
+							<span class='property-name'>width</span>
+							<div class='property-value'>
+								<input type="text">
+							</div>
+						</li>
+						<li class='input'>
+							<span class='property-name'>height</span>
+							<div class='property-value'>
+								<input type="text">
+							</div>
+						</li>
+						<li class='button'>
+							<span class="property-name"><a href="javascript:void(0)">generate arena</a></span>
+						</li>
 					</div>
-				</li>
-				<li>
-					<span class='property-name'>qty of assets (%)</span>
-					<div class='property-value'>
-						<input type="text">
-					</div>
-				</li>
+				</div>
 			</div>
 
 			<canvas id="canvas" style='z-index:1000' width="" height="" >

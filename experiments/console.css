@@ -1,17 +1,69 @@
 #console {
-	font-family: sans-serif;
 	z-index: 10000;
-	position: absolute;
-	right:10;
-	top: 10;
-	width: 400px;
-	background: rgb(10, 10, 10);
-	box-shadow: 2px 2px 2px rgba(0,0,0,.4);
+	font-size: 12px;
+	font-family: sans-serif;
+	position: relative;
 }
 
-#console a, #console a:hover, #console a:visited, #console a:active {
+#consoleLeftMenu, #consoleRightMenu {
+	background: rgb(10, 10, 10);
+	box-shadow: 2px 2px 2px rgba(0,0,0,.4);
+	z-index: 10001;
+	right:75;
+	top: 10;
+	width: 400px;
+	position: absolute;
+}
+
+#consoleRightMenu {
+	right: 10px;
+	width: 48px;
+	height: 400px;
+	padding: 5px;
+}
+
+
+
+#consoleRightMenu li {
+	list-style: none;
+	background: red;
+	width: 100%;
+	height: 48px;
+	margin-bottom: 4px;
+	background: rgb(15, 15, 15);
+	color:rgb(200, 200, 220);
+	box-shadow: inset 1px 1px 1px rgba(255, 255, 255, .1), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
+	cursor: pointer;
+}
+
+#consoleRightMenu li.active, #consoleRightMenu li:hover {
+	background: rgb(20, 20, 20);
+	color:rgb(255, 255, 255);
+	box-shadow: inset -1px -1px 2px rgba(255, 255, 255, .1), inset 1px 1px 1px rgba(0, 0, 0, 1);	
+}
+
+#consoleLeftMenu .console-panel span.object-name,
+#consoleLeftMenu .console-controllers li.button {
+
+	  -webkit-user-select: none;
+	   -khtml-user-select: none;
+		 -moz-user-select: none;
+		   -o-user-select: none;
+			  user-select: none; 
+}
+
+#consoleLeftMenu a, #consoleLeftMenu a:hover, #consoleLeftMenu a:visited, #consoleLeftMenu a:active,
+#consoleLeftMenu li.button span.button {
 	color: white;
 	text-decoration: none;
+	outline: 0;
+	line-height: 20px;
+	display: block;
+	cursor: pointer;
+}
+
+#consoleLeftMenu input {
+	outline: 0;
 }
 
 
@@ -38,11 +90,11 @@
 }
 
 
-#console .console-controllers.close {
+#consoleLeftMenu .console-controllers.close {
 	display: none;
 }
 
-#console li {
+#consoleLeftMenu li {
 	width: 95%;
 	height: 23px;
 	padding: 3px 3px 3px 8px;
@@ -52,19 +104,19 @@
 	border-bottom: 1px solid rgb(30, 30, 30)
 }
 
-#console .console-controllers li:first-child {
+#consoleLeftMenu .console-controllers li:first-child {
 	border-top: 1px solid rgb(30, 30, 30);
 }
 
-#console li.button {
+#consoleLeftMenu li.button {
 	border-left: 4px solid rgb(58, 82, 164);
 }
 
-#console li:hover, #console li.button:hover {
+#consoleLeftMenu li:hover, #consoleLeftMenu li.button:hover {
 	background: rgb(20, 20, 20);
 }
 
-#console li span.property-name {
+#consoleLeftMenu li span.property-name {
 	cursor: default;
 	color:white;
 	font-size: 12px;
@@ -73,21 +125,21 @@
 	line-height: 23px;
 }
 
-#console li.button span.property-name {
+#consoleLeftMenu li.button span.property-name {
 	width: 100%;
 }
 
-#console li.button span.property-name a {
+#consoleLeftMenu li.button span.property-name a {
 	display: block;
 	width: 100%;
 }
 
-#console li .property-value {
+#consoleLeftMenu li .property-value {
 	float:left;
 	width: 60%;
 }
 
-#console li .property-value input {
+#consoleLeftMenu li .property-value input {
 	margin-left: 5px;
 	padding: 3px;
 	width: 40%;
@@ -97,6 +149,6 @@
 	color: rgb(151, 184, 57);
 }
 
-#console li:hover .property-value input {
+#consoleLeftMenu li:hover .property-value input {
 	background: rgb(40, 40, 40);
 }

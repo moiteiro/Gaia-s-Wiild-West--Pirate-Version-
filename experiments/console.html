@@ -19,27 +19,36 @@
 	</head>
 	<body>
 		<div id='viewport'>
-			<div id="console" class=''>
-				<div class="console-panel">
-					<div>
-						<span class='object-name'>Battlefield</span>
-					</div>
-					<div class="console-controllers">
-						<li class='input'>
-							<span class='property-name'>width</span>
-							<div class='property-value'>
-								<input type="text">
-							</div>
-						</li>
-						<li class='input'>
-							<span class='property-name'>height</span>
-							<div class='property-value'>
-								<input type="text">
-							</div>
-						</li>
-						<li class='button'>
-							<span class="property-name"><a href="javascript:void(0)">generate arena</a></span>
-						</li>
+			<div id="console">
+				<div id="consoleRightMenu">
+					<li data-module="" class='active'></li>
+					<li data-module=""></li>
+					<li data-module=""></li>
+					<li data-module=""></li>
+				</div>
+
+				<div id="consoleLeftMenu" class=''>
+					<div class="console-panel">
+						<div>
+							<span class='object-name'>Battlefield</span>
+						</div>
+						<div class="console-controllers">
+							<li class='input'>
+								<span class='property-name'>width</span>
+								<div class='property-value'>
+									<input type="text">
+								</div>
+							</li>
+							<li class='input'>
+								<span class='property-name'>height</span>
+								<div class='property-value'>
+									<input type="text">
+								</div>
+							</li>
+							<li class='button'>
+								<span class="button">generate arena</span>
+							</li>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -86,6 +95,7 @@
 
 	<script>
 
+		window.gww = {};
 		window.onload = initConsole;
 
 
@@ -96,12 +106,17 @@
 				Battlefield: {
 					width : {
 						controller: "input",
-						type: "integer"
+						type: "integer",
+						wacth: gww
 					},
 					height : {
 						controller: "input",
 						type: "integer"
 					},
+					generate_arena : {
+						controller: "button",
+						func: gww.show
+					}
 				}
 			};
 
@@ -115,14 +130,13 @@
 				// consoleDiv.id = "console";
 
 				// body.appendChild(consoleDiv);
-				consoleDiv = document.getElementById('console');
+				consoleDiv = document.getElementById('consoleLeftMenu');
 
 			for (i in structure) {
 				if (structure.hasOwnProperty(i)) {
 					consoleDiv.appendChild(_createPanelTitle(i, structure[i]));
 				}
 			}
-
 		}
 
 		function _createPanelTitle(title, configs) {
@@ -148,37 +162,57 @@
 		}
 
 		function _createTweakerController(title, configs) {
-			var liWrapper = E('li'),
-				propertyName = E('span', {class: "property-name", text: title}),
+			var li = E('li'),
 				controllerType = "";
+				title = title.replace('_', ' ');
 
-			controllerType = liWrapper.className = configs.hasOwnProperty("controller") ? configs.controller : "";
-			liWrapper.appendChild(propertyName);
+			controllerType = li.className = configs.hasOwnProperty("controller") ? configs.controller : "";
 
 			switch(controllerType) {
 			case "input":
 				var input = E('input', {type: 'input'});
 				var inputWrapper = E('div', {class: "property-value"});
+				var propertyName = E('span', {class: "property-name", text: title});
+
+				li.appendChild(propertyName);
 
 				inputWrapper.appendChild(input);
-				liWrapper.appendChild(inputWrapper);
+				li.appendChild(inputWrapper);
+				break;
+
+			case "button":
+				var button = E('span', {class:'button', href: 'javascript:void(0);', text: title});
+				var buttonWrapper = E('div', {class: 'button'});
+
+				buttonWrapper.appendChild(button);
+				li.appendChild(buttonWrapper);
+
+				button.addEventListener('click', configs.func, false);
 				break;
 			}
 
-			return liWrapper;
+			return li;
 		}
 
 		function E(name, configs) {
-			// text, class, id, title, type and name for inputs.
-			var element = document.createElement(name);
+			
+			var element = document.createElement(name),
+				attributes = ['id', 'class', 'title', 'type', 'name', 'value', 'href'];
 			
 			if (Object.prototype.toString.call(configs) === "[object Object]") {
-				element.className = configs.hasOwnProperty("class") ? configs.class : "";
-				element.id = configs.hasOwnProperty("id") ? configs.id : "";
+
+				for (i in attributes) {
+
+					attr = attributes[i];
+
+					if (configs.hasOwnProperty(attr)) {
+						element.setAttribute(attr, configs[attr]);
+					}					
+				}
 
 				if (configs.hasOwnProperty("text")) {
 					element.appendChild(document.createTextNode(configs.text));
-				}
+				}	
 			}
 
 			return element;
@@ -216,11 +250,12 @@
 			sibling.className = className;
 		}
 	</script>
-</html>
 
-<li class='input'>
-	<span class='property-name'>width</span>
-	<div class='property-value'>
-		<input type="text">
-	</div>
-</li>
+
+	<script>
+
+		window.gww.show = function () {
+			console.log('show');
+		}
+	</script>
+</html>
