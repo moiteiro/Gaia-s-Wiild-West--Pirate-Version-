@@ -95,8 +95,10 @@
 }
 
 #consoleLeftMenu li {
-	width: 95%;
+	margin-left: 2px;
+	width: 94%;
 	height: 23px;
+	margin-bottom:1px;
 	padding: 3px 3px 3px 8px;
 	display: block;
 	list-style: none;
@@ -106,6 +108,11 @@
 
 #consoleLeftMenu .console-controllers li:first-child {
 	border-top: 1px solid rgb(30, 30, 30);
+}
+
+#consoleLeftMenu li.input-disabled {
+	border-left: 4px solid rgb(148, 154, 133);
+;
 }
 
 #consoleLeftMenu li.button {
@@ -147,6 +154,12 @@
 	border: none;
 	background: rgb(20, 20, 20);
 	color: rgb(151, 184, 57);
+}
+
+#consoleLeftMenu li.input-disabled .property-value input {
+	color: rgb(148, 154, 133);
+	/*color: rgb(109, 132, 46);*/
+	cursor: default;
 }
 
 #consoleLeftMenu li:hover .property-value input {

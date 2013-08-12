@@ -28,7 +28,7 @@
 				</div>
 
 				<div id="consoleLeftMenu" class=''>
-					<div class="console-panel">
+					<!-- <div class="console-panel">
 						<div>
 							<span class='object-name'>Battlefield</span>
 						</div>
@@ -45,57 +45,48 @@
 									<input type="text">
 								</div>
 							</li>
+							<li class='input-disabled'>
+								<span class='property-name'>height</span>
+								<div class='property-value'>
+									<input type="text" disabled='disabled'>
+								</div>
+							</li>
 							<li class='button'>
 								<span class="button">generate arena</span>
 							</li>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>
 	</body>
 	
-
 	<script>
-		if (!Object.keys) {
-			Object.keys = (function () {
-				var hasOwnProperty = Object.prototype.hasOwnProperty,
-					hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
-					dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor' ],
-					dontEnumsLength = dontEnums.length;
-
-				return function (obj) {
-					var result = [],
-						prop,
-						i;
-
-					if ((typeof obj !== 'object' && typeof obj !== 'function') || obj === null) {
-						throw new TypeError("Object.keys called on non-object");
-					}
-
-					for (prop in obj) {
-						if (obj.hasOwnProperty(prop)) {
-							result.push(prop);
-						}
-					}
-
-					if (hasDontEnumBug) {
-						for (i = 0; i < dontEnumsLength; i++) {
-							if (hasOwnProperty.call(obj, dontEnums[i])) {
-								result.push(dontEnums[i]);
-							}
-						}
-					}
-					return result;
-				};
-			}());
-		}
-	</script>
-			
-
-	<script>
-
 		window.gww = {};
+
+		window.gww.size = 10413;
+		window.gww.width = 12;
+		window.gww.height = 14;
+
+		window.gww.biome = "savannah";
+		window.gww.amount = 20;
+
+		window.gww.show = function () {
+			console.log('show');
+		}
+
+
+		// window.gww.number = 12;
+		// window.gww.watch("number", changeHandler);
+
+		// function changeHandler () {
+		// 	console.log('o valor mudou');
+		// }
+	</script>
+
+	<script>
+
+		
 		window.onload = initConsole;
 
 
@@ -107,15 +98,34 @@
 					width : {
 						controller: "input",
 						type: "integer",
-						wacth: gww
+						watch: gww.width
 					},
 					height : {
 						controller: "input",
-						type: "integer"
+						type: "integer",
+						watch: gww.height
+					},
+					size : {
+						controller: "input-disabled",
+						type: "integer",
+						watch: gww.size,
 					},
 					generate_arena : {
 						controller: "button",
 						func: gww.show
+					}
+				},
+
+				Enviroment: {
+					biome: {
+						controller: "input",
+						type: "string",
+						watch: gww.biome
+					},
+					population: {
+						controller: "input",
+						type: "integer",
+						watch: gww.amount
 					}
 				}
 			};
@@ -164,13 +174,27 @@
 		function _createTweakerController(title, configs) {
 			var li = E('li'),
 				controllerType = "";
-				title = title.replace('_', ' ');
+
+			title = title.replace('_', ' ');
 
 			controllerType = li.className = configs.hasOwnProperty("controller") ? configs.controller : "";
 
 			switch(controllerType) {
+
 			case "input":
-				var input = E('input', {type: 'input'});
+				var input = E('input', {type: 'input', value: configs.watch});
+				var inputWrapper = E('div', {class: "property-value"});
+				var propertyName = E('span', {class: "property-name", text: title});
+
+				li.appendChild(propertyName);
+
+				inputWrapper.appendChild(input);
+				li.appendChild(inputWrapper);
+
+				break;
+
+			case "input-disabled":
+				var input = E('input', {type: 'input', value: configs.watch, disabled: 'disabled'});
 				var inputWrapper = E('div', {class: "property-value"});
 				var propertyName = E('span', {class: "property-name", text: title});
 
@@ -197,7 +221,7 @@
 		function E(name, configs) {
 			
 			var element = document.createElement(name),
-				attributes = ['id', 'class', 'title', 'type', 'name', 'value', 'href'];
+				attributes = ['id', 'class', 'title', 'type', 'name', 'value', 'href', 'disabled'];
 			
 			if (Object.prototype.toString.call(configs) === "[object Object]") {
 
@@ -251,11 +275,93 @@
 		}
 	</script>
 
-
 	<script>
+		if (!Object.keys) {
+			Object.keys = (function () {
+				var hasOwnProperty = Object.prototype.hasOwnProperty,
+					hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
+					dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor' ],
+					dontEnumsLength = dontEnums.length;
 
-		window.gww.show = function () {
-			console.log('show');
+				return function (obj) {
+					var result = [],
+						prop,
+						i;
+
+					if ((typeof obj !== 'object' && typeof obj !== 'function') || obj === null) {
+						throw new TypeError("Object.keys called on non-object");
+					}
+
+					for (prop in obj) {
+						if (obj.hasOwnProperty(prop)) {
+							result.push(prop);
+						}
+					}
+
+					if (hasDontEnumBug) {
+						for (i = 0; i < dontEnumsLength; i++) {
+							if (hasOwnProperty.call(obj, dontEnums[i])) {
+								result.push(dontEnums[i]);
+							}
+						}
+					}
+					return result;
+				};
+			}());
+		}
+
+		/*
+		* object.watch polyfill
+		*
+		* 2012-04-03
+		*
+		* By Eli Grey, http://eligrey.com
+		* Public Domain.
+		* NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+		*/
+		 
+		// object.watch
+		if (!Object.prototype.watch) {
+		Object.defineProperty(Object.prototype, "watch", {
+		enumerable: false
+		, configurable: true
+		, writable: false
+		, value: function (prop, handler) {
+		var
+		oldval = this[prop]
+		, newval = oldval
+		, getter = function () {
+		return newval;
+		}
+		, setter = function (val) {
+		oldval = newval;
+		return newval = handler.call(this, prop, oldval, val);
+		}
+		;
+		if (delete this[prop]) { // can't watch constants
+		Object.defineProperty(this, prop, {
+		get: getter
+		, set: setter
+		, enumerable: true
+		, configurable: true
+		});
+		}
+		}
+		});
+		}
+		 
+		// object.unwatch
+		if (!Object.prototype.unwatch) {
+		Object.defineProperty(Object.prototype, "unwatch", {
+		enumerable: false
+		, configurable: true
+		, writable: false
+		, value: function (prop) {
+		var val = this[prop];
+		delete this[prop]; // remove accessors
+		this[prop] = val;
+		}
+		});
 		}
 	</script>
 </html>
