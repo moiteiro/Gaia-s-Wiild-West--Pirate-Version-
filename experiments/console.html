@@ -28,34 +28,30 @@
 				</div>
 
 				<div id="consoleLeftMenu" class=''>
-					<!-- <div class="console-panel">
+					<div class="console-panel">
 						<div>
-							<span class='object-name'>Battlefield</span>
+							<span class='object-name'>Assets</span>
 						</div>
-						<div class="console-controllers">
-							<li class='input'>
-								<span class='property-name'>width</span>
-								<div class='property-value'>
-									<input type="text">
+						<div class="console-container">
+							<div class="console-tabs">
+								<div class="console-tabs-header">
+									<li class='active' data-href='tab-1'>Nature</li>
+									<li>Building</li>
+									<li>Animals</li>
 								</div>
-							</li>
-							<li class='input'>
-								<span class='property-name'>height</span>
-								<div class='property-value'>
-									<input type="text">
+								<div class='console-tabs-content'>
+									<div class='tab-1'>
+										<li>
+											<img src="../assets/nature/savanna/tree.png" height='80px' alt="">
+										</li>
+										<li>
+											<img src="../assets/nature/savanna/tree1.png" height='80px' alt="">
+										</li>	
+									</div>	
 								</div>
-							</li>
-							<li class='input-disabled'>
-								<span class='property-name'>height</span>
-								<div class='property-value'>
-									<input type="text" disabled='disabled'>
-								</div>
-							</li>
-							<li class='button'>
-								<span class="button">generate arena</span>
-							</li>
+							</div>
 						</div>
-					</div> -->
+					</div>
 				</div>
 			</div>
 		</div>
@@ -68,7 +64,7 @@
 		window.gww.width = 12;
 		window.gww.height = 14;
 
-		window.gww.biome = "savannah";
+		window.gww.biome = "savanna";
 		window.gww.amount = 20;
 
 		window.gww.show = function () {
@@ -116,7 +112,7 @@
 					}
 				},
 
-				Enviroment: {
+				Environment: {
 					biome: {
 						controller: "input",
 						type: "string",
@@ -151,7 +147,7 @@
 
 		function _createPanelTitle(title, configs) {
 			var consolePanel = E('div', {class: "console-panel"}),
-				consoleControllers = E('div', {class: "console-controllers"}),
+				consoleControllers = E('div', {class: "console-container"}),
 
 				objectNameWrapper = E('div'),
 				objectName = E('span', {class: 'object-name', text: title});
@@ -182,35 +178,29 @@
 			switch(controllerType) {
 
 			case "input":
-				var input = E('input', {type: 'input', value: configs.watch});
-				var inputWrapper = E('div', {class: "property-value"});
-				var propertyName = E('span', {class: "property-name", text: title});
-
-				li.appendChild(propertyName);
-
-				inputWrapper.appendChild(input);
-				li.appendChild(inputWrapper);
-
-				break;
-
 			case "input-disabled":
-				var input = E('input', {type: 'input', value: configs.watch, disabled: 'disabled'});
-				var inputWrapper = E('div', {class: "property-value"});
-				var propertyName = E('span', {class: "property-name", text: title});
+				var propertyName = E('span', {class: "property-name", text: title}),
+					inputWrapper = E('div', {class: "property-value"});
+					input = E('input', {type: 'input', value: configs.watch}, inputWrapper);
+
+				if (controllerType.indexOf("disabled") > -1) {
+					input.setAttribute("disabled", "disabled");
+				}
+
+				if (controllerType.indexOf("disabled") > -1) {
+					input.setAttribute("disabled", "disabled");
+				}
 
 				li.appendChild(propertyName);
-
-				inputWrapper.appendChild(input);
 				li.appendChild(inputWrapper);
+
 				break;
 
 			case "button":
-				var button = E('span', {class:'button', href: 'javascript:void(0);', text: title});
-				var buttonWrapper = E('div', {class: 'button'});
+				var buttonWrapper = E('div', {class: 'button'}),
+					button = E('span', {class:'button', href: 'javascript:void(0);', text: title}, buttonWrapper);
 
-				buttonWrapper.appendChild(button);
 				li.appendChild(buttonWrapper);
-
 				button.addEventListener('click', configs.func, false);
 				break;
 			}
@@ -218,7 +208,7 @@
 			return li;
 		}
 
-		function E(name, configs) {
+		function E(name, configs, parent) {
 			
 			var element = document.createElement(name),
 				attributes = ['id', 'class', 'title', 'type', 'name', 'value', 'href', 'disabled'];
@@ -237,6 +227,10 @@
 				if (configs.hasOwnProperty("text")) {
 					element.appendChild(document.createTextNode(configs.text));
 				}	
+			}
+
+			if (typeof(parent) !== "undefined") {
+				parent.appendChild(element);
 			}
 
 			return element;
@@ -264,7 +258,7 @@
 
 			className = sibling.getAttribute('class');
 
-			if (className.indexOf('console-controllers') > -1) {
+			if (className.indexOf('console-container') > -1) {
 				if (className.indexOf('close') > -1) {
 					className = className.replace('close', '');
 				} else {
