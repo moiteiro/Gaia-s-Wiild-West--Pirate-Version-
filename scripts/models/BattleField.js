@@ -55,7 +55,7 @@ var BattleField = klass({
 	},
 
 	loadServerMap: function () {
-		var URL = "http://gaiawildwest/server-side-map.json";
+		var URL = "/server-side-map.json";
 		getJSON(URL, this._setMap.bind(this));
 	},
 
