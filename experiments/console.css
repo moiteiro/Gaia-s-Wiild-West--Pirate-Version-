@@ -104,7 +104,7 @@
 	display: block;
 	list-style: none;
 	border-left: 4px solid rgb(47, 161, 214);
-	border-bottom: 1px solid rgb(30, 30, 30)
+	border-bottom: 1px solid rgb(30, 30, 30);
 }
 
 
@@ -227,3 +227,39 @@
 	background: rgb(20, 20, 20);
 	box-shadow: inset -1px -1px 1px rgba(255, 255, 255, 0.1), inset 1px 1px 4px rgba(0, 0, 0, 1);
 }
+
+
+
+
+/************************
+	DropDown Menu
+************************/
+.select ul.select-items {
+	padding:0px;
+}
+
+.select .select-header,
+.select ul.select-items {
+	margin:0px;
+	background:black;
+}
+
+.select .selected-item {
+	color:white;
+	font-size:12px;
+	line-height:16px;
+}
+
+.select .select-items li{
+	color: white;
+	list-style: none;
+	margin-left: 0px;
+	font-size: 12px;
+	line-height: 16px;
+}
+
+.select .select-items li:hover {
+	background: gray;
+}
+
+
