@@ -9,7 +9,7 @@
 	background: rgb(10, 10, 10);
 	box-shadow: 2px 2px 2px rgba(0,0,0,.4);
 	z-index: 10001;
-	right:75;
+	right:70;
 	top: 10;
 	width: 400px;
 	position: absolute;
@@ -17,22 +17,25 @@
 
 #consoleRightMenu {
 	right: 10px;
-	width: 48px;
+	width: 46px;
 	height: 400px;
-	padding: 5px;
+	padding: 4px;
 }
-
-
 
 #consoleRightMenu li {
 	list-style: none;
-	width: 100%;
-	height: 48px;
+	padding: 10px 10px 10px 10px;
 	margin-bottom: 4px;
 	background: rgb(15, 15, 15);
-	color:rgb(200, 200, 220);
+	color:rgb(100, 100, 100);
 	box-shadow: inset 1px 1px 1px rgba(255, 255, 255, .1), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
 	cursor: pointer;
+	font-size:18px;
+	font-weight: bold;
+	text-align: center;
+}
+
+#consoleRightMenu li.active {	
 }
 
 #consoleRightMenu li.active, #consoleRightMenu li:hover {
@@ -69,10 +72,10 @@
 .console-panel span.object-name{
 	margin-bottom: 3px;
 	background: rgb(25, 25, 25);
-	color:rgb(200, 200, 220);
+	color:white;
 	font-size: 12px;
 	display: block;
-	padding: 7px;
+	padding: 8px;
 	text-align: center;
 	text-transform: uppercase;
 	cursor: pointer;
@@ -84,30 +87,28 @@
 	margin-top: 10px;
 }
 
-.console-panel span.object-name:hover {
-	color:white;
-}
-
-
 #consoleLeftMenu .console-container.close {
 	display: none;
 }
 
 #consoleLeftMenu .console-container li.input,
 #consoleLeftMenu .console-container li.input-disabled,
+#consoleLeftMenu .console-container li.select,
 #consoleLeftMenu .console-container li.button {
 	margin-left: 2px;
 	width: 92%;
 	height: 23px;
 	margin-bottom:1px;
-	padding: 3px 3px 3px 20px;
+	padding: 2px 3px 5px 20px;
 	display: block;
 	list-style: none;
 	border-left: 4px solid rgb(47, 161, 214);
-	border-bottom: 1px solid rgb(30, 30, 30);
+	border-bottom: 1px solid rgb(20, 20, 20);
 }
 
-
+#consoleLeftMenu .console-container li:last-child {
+	border-bottom: none;
+}
 
 #consoleLeftMenu .console-container li.input-disabled {
 	border-left:4px solid rgb(140, 169, 183);
@@ -148,7 +149,7 @@
 
 #consoleLeftMenu .console-container li .property-value input {
 	margin-left: 5px;
-	padding: 3px;
+	padding: 4px;
 	width: 40%;
 	float:right;
 	border: none;
@@ -178,29 +179,32 @@
 	margin-left: 2px;
 	margin-top: 5px;
 	margin-bottom: 5px;
-	height: 25px;
+	height: 24px;
 	border-bottom: 1px solid rgb(30, 30, 30);
+	background: black
 }
 
 #consoleLeftMenu .console-tabs-header li {
-	margin-right: -3px;
 	list-style: none;
 	color:white;
 	display: inline;
 	padding: 6px 14px;
 	line-height: 22px;
 	border: none;
-	background: rgb(20, 20, 20);
+	background: rgb(0, 0, 0);
 	color:rgb(200, 200, 220);
-	box-shadow: inset 1px 1px 1px rgba(255, 255, 255, .05), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
 	cursor: pointer;
+	border:1px solid rgb(10, 10, 10);
+	border-bottom: 1px solid rgb(30, 30, 30);
 }
 
 #consoleLeftMenu .console-tabs-header li.active,
 #consoleLeftMenu .console-tabs-header li:hover {
 	background: rgb(10, 10, 10);
 	color:rgb(255, 255, 255);
-	box-shadow: inset -1px -1px 1px rgba(255, 255, 255, .1);
+	border: 1px solid rgb(30, 30, 30);
+	border-bottom-color: rgb(10, 10, 10);
+	border-radius: 2px 2px 0px 0px;
 }
 
 #consoleLeftMenu .console-tabs-content {
@@ -215,51 +219,75 @@
 	display: table;
 	float:left;
 	padding: 5px;
-	margin: 0px 2px 0px 2px;
+	margin: 4px;
 
-	-webkit-border-radius: 4px;
-	   -moz-border-radius: 4px;
-			border-radius: 4px;
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+			border-radius: 3px;
 }
 
 #consoleLeftMenu .console-tabs-content li.active,
 #consoleLeftMenu .console-tabs-content li:hover {
-	background: rgb(20, 20, 20);
-	box-shadow: inset -1px -1px 1px rgba(255, 255, 255, 0.1), inset 1px 1px 4px rgba(0, 0, 0, 1);
+	background: rgb(15, 15, 15);
+	box-shadow: inset -1px -1px 1px rgba(255, 255, 255, 0.05);
 }
-
-
 
 
 /************************
 	DropDown Menu
 ************************/
-.select ul.select-items {
+
+.select-component {
+	display: block;
+	width: 100%;
+	margin-right: 0px;
+}
+
+.select-component ul.select-items {
 	padding:0px;
 }
 
-.select .select-header,
-.select ul.select-items {
+.select-component .select-header,
+.select-component ul.select-items {
 	margin:0px;
-	background:black;
+	background: rgb(20, 20, 20);
+	color: rgb(47, 161, 214);
 }
 
-.select .selected-item {
-	color:white;
-	font-size:12px;
-	line-height:16px;
+.select-component ul.select-items {
+	background: rgb(25, 25, 25);
 }
 
-.select .select-items li{
-	color: white;
-	list-style: none;
-	margin-left: 0px;
+.select-component .select-options {
+	position: relative;
+}
+
+.select-component ul.select-items {
+	position: absolute;
+	width: 100%;
+}
+
+.select-component .selected-item,
+.select-component .select-items li{
+	display: block;
+	color: rgb(47, 161, 214);
 	font-size: 12px;
 	line-height: 16px;
+	padding: 4px 2px 4px 12px;
+	cursor: pointer;
 }
 
-.select .select-items li:hover {
-	background: gray;
+.select-component .select-items li {
+	list-style: none;
+	margin-left: 0px;
+	padding: 6px 2px 6px 12px;
 }
 
+.select-component .select-items li:hover {
+	color:white;
+	background: rgb(20, 20, 20);
+}
 
+/************************
+	Compoments state
+************************/
