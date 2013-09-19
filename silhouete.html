@@ -1,5 +1,9 @@
 <html>
-
+	<style>
+	body {
+		background: black;
+	}
+	</style>
 	<body>
 		<canvas id="game"> 
 		</canvas>	
@@ -8,13 +12,13 @@
 	<script>
 		window.onload = function () {
 		  img = new Image();
-		  img.src = "assets/nature/savanna/tree.png";
+		  img.src = "assets/nature/savanna/tree1.png";
 		  
 		  canvas = document.getElementById("game");
 		  ctx = canvas.getContext("2d");
 		  
-		  width = canvas.width = 300;
-		  height = canvas.height = 300;
+		  width = canvas.width = 400;
+		  height = canvas.height = 400;
 		  
 		  ctx.fillStyle = "red";
 		  ctx.drawImage(img, 0, 0, img.width, img.height);
@@ -66,15 +70,21 @@
     	    for(var i=0; i < data.length; i += 4) {
     	        if(isBlankPixel(i) && hasAdjacentPixel(i)) {
     	            fdata[i] = fdata[i+1] = 255;
-    	            fdata[i+2] = 150;
-    	            fdata[i+3] = 150;
+    	            fdata[i+2] = 255;
+    	            fdata[i+3] = 255;
+    	        }
+    	    }
+
+    	    for(var i=0; i < data.length; i += 4) {
+    	        if(isBlankPixel(i) && hasAdjacentPixel(i)) {
+    	            fdata[i] = fdata[i+1] = 255;
+    	            fdata[i+2] = 255;
+    	            fdata[i+3] = 200;
     	        }
     	    }
 
     	    finalData.data = fdata;
     	    ctx.putImageData(finalData, 0, 0);
-	    
-			console.log("created");
 		};
 	</script>
 </html>

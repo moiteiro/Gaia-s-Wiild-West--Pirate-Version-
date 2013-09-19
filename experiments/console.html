@@ -24,13 +24,11 @@
 	<body>
 		<div id='viewport'>
 			<div id="console">
-				<div id="consoleRightMenu">
-					<li data-module="" class='active'><span data-icon="&#xe000;"></span></li>
-					<li data-module=""><span data-icon="&#xe000;"></span></li>
-				</div>
-
 				<div id="consoleLeftMenu" class=''>
-					<div class="console-panel">
+					<!-- <div class='console-title'>
+						<h3><span data-icon="&#xe000;"></span> BattleField</h3>
+					</div> -->
+					<!-- <div class="console-panel">
 						<div>
 							<span class='object-name'>Assets</span>
 						</div>
@@ -53,7 +51,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>
@@ -74,13 +72,6 @@
 			console.log('show');
 		}
 
-
-		// window.gww.number = 12;
-		// window.gww.watch("number", changeHandler);
-
-		// function changeHandler () {
-		// 	console.log('o valor mudou');
-		// }
 	</script>
 
 	<script>
@@ -92,37 +83,39 @@
 
 			var Structure = {
 				Battlefield: {
-					width : {
-						controller: "input",
-						type: "integer",
-						watch: gww.width
+					Details: {
+						width : {
+							controller: "input",
+							type: "integer",
+							watch: gww.width
+						},
+						height : {
+							controller: "input",
+							type: "integer",
+							watch: gww.height
+						},
+						size : {
+							controller: "input-disabled",
+							type: "integer",
+							watch: gww.size,
+						},
+						generate_arena : {
+							controller: "button",
+							func: gww.show
+						}
 					},
-					height : {
-						controller: "input",
-						type: "integer",
-						watch: gww.height
-					},
-					size : {
-						controller: "input-disabled",
-						type: "integer",
-						watch: gww.size,
-					},
-					generate_arena : {
-						controller: "button",
-						func: gww.show
-					}
-				},
 
-				Environment: {
-					biome: {
-						controller: "select",
-						type: "string",
-						watch: gww.array
-					},
-					population: {
-						controller: "input",
-						type: "integer",
-						watch: gww.amount
+					Environment: {
+						biome: {
+							controller: "select",
+							type: "string",
+							watch: gww.array
+						},
+						population: {
+							controller: "input",
+							type: "integer",
+							watch: gww.amount
+						}
 					}
 				}
 			};
@@ -133,15 +126,18 @@
 
 		function createStructure(structure) {
 			var body = document.getElementsByTagName('body')[0],
-				// consoleDiv = document.createElement('div');
-				// consoleDiv.id = "console";
-
-				// body.appendChild(consoleDiv);
 				consoleDiv = document.getElementById('consoleLeftMenu');
 
-			for (i in structure) {
-				if (structure.hasOwnProperty(i)) {
-					consoleDiv.appendChild(_createPanelTitle(i, structure[i]));
+				consoleRightMenu = E('div',{id:'consoleRightMenu'}, body);
+			for (var i in structure) {
+
+				var consolePanelTitleWrapper = E('div', {class: 'console-title'}, consoleDiv);
+				var consolePanelTitle = E('h3',{text: i}, consolePanelTitleWrapper);
+
+				for( var j in structure[i]) {
+					if (structure[i].hasOwnProperty(j)) {
+						consoleDiv.appendChild(_createPanelTitle(j, structure[i][j]));
+					}
 				}
 			}
 		}
@@ -199,9 +195,6 @@
 					inputWrapper = E('div', {class: "property-value"}, li);
 
 					var select = new SelectCompoment(configs.watch, inputWrapper);
-					
-					// input = E('input', {type: 'input', value: configs.watch}, inputWrapper);
-
 				break;
 
 			case "button":
@@ -430,8 +423,5 @@
 			}
 
 		});
-
-		var array = ['savanna', 'desert', 'swamp', 'tropical rainforest'];
-		var select = new SelectCompoment(array);
 	</script>
 </html>

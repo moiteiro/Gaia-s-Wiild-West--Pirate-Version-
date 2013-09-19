@@ -9,14 +9,14 @@
 	background: rgb(10, 10, 10);
 	box-shadow: 2px 2px 2px rgba(0,0,0,.4);
 	z-index: 10001;
-	right:70;
-	top: 10;
-	width: 400px;
+	right:62;
+	top: 4;
+	width: 600px;
 	position: absolute;
 }
 
 #consoleRightMenu {
-	right: 10px;
+	right: 4;
 	width: 46px;
 	height: 400px;
 	padding: 4px;
@@ -64,12 +64,42 @@
 	cursor: pointer;
 }
 
+#consoleLeftMenu .console-title {
+	color:white;
+	font-size: 12px;
+	display: block;
+	text-align: center;
+	text-transform: uppercase;
+	cursor: pointer;
+	font-weight: bold;
+	margin: 0px;
+	background: rgb(40, 40, 40);
+	box-shadow: inset 0px 1px 1px rgba(255, 255, 255, .2);
+}
+
+
+
+#consoleLeftMenu .console-title h3{
+	color:white;
+	font-size: 14px;
+	text-align: left;
+	line-height: 9px;
+	margin-left: 20px;
+	padding: 12px 0px 8px 0px;
+	margin-top:3px;
+	margin-bottom:4px;
+}
+
+#consoleLeftMenu .console-title span {
+	font-size:10px;
+	margin-right: 5px;
+}
+
 #consoleLeftMenu input {
 	outline: 0;
 }
 
-
-.console-panel span.object-name{
+.console-panel span.object-name {
 	margin-bottom: 3px;
 	background: rgb(25, 25, 25);
 	color:white;
@@ -83,9 +113,7 @@
 	box-shadow: inset 0px 1px 1px rgba(255, 255, 255, .1);
 }
 
-.console-panel:first-child {
-	margin-top: 10px;
-}
+
 
 #consoleLeftMenu .console-container.close {
 	display: none;
