@@ -49,24 +49,6 @@ var GWW = klass({
 			tileSize: this.tileSize,
 			scaledTileSize: this.scaledTileSize
 		});
-
-		this.resources = new Resource({
-			path: "assets/nature/savanna/",
-			type: "nature",
-			context: this.context
-		});
-
-		// implementar algum tipo de load bar para esperar que todos os resources seja carregados.
-		this.battleField = new BattleField({
-			resources: this.resources,
-			context: this.context,
-			screenWidth: this.screenWidth,
-			screenHeight: this.screenHeight,
-			scaledTileSize: this.scaledTileSize,
-			tileSize: this.tileSize
-		});
-
-		this.controls.setBattleFieldAttributes(this.battleField.getAttributes());
 	},
 
 
@@ -86,9 +68,27 @@ var GWW = klass({
 		switch (curState) {
 
 		case states.BATTLE_NEW:
+			// 1 - calculate with biome will
+			
+			// 2 - load the resources needed
+			this._setupResources();
+
+			this.gameController.setState('BATTLE_LOADING');
+
+			break;
+
+		case states.BATTLE_LOADING:
+			// implementar algum tipo de load bar para esperar que todos os resources seja carregados.
+			// this is the time for loading bar!!!
 			if (this.resources.isReady()) {
-				this.gameController.setState('BATTLE');
+				this._setupBattleField();
+				this.controls.setBattleFieldAttributes(this.battleField.getAttributes());
+				this.gameController.setState('BATTLE_LOADED')
 			}
+			break;
+
+		case states.BATTLE_LOADED:
+				this.gameController.setState('BATTLE');
 			break;
 
 		case states.BATTLE:
@@ -103,10 +103,29 @@ var GWW = klass({
 
 	render: function () {
 		this.update();	
+	},
+
+	_setupBattleField: function () {
+		this.battleField = new BattleField({
+			resources: this.resources,
+			context: this.context,
+			screenWidth: this.screenWidth,
+			screenHeight: this.screenHeight,
+			scaledTileSize: this.scaledTileSize,
+			tileSize: this.tileSize
+		});
+	},
+
+	_setupResources: function () {
+		this.resources = new Resource({
+			path: "assets/nature/savanna/",
+			type: "nature",
+			context: this.context
+		});
 	}
 });
 
-var gww = new GWW();
+window.gww = new GWW();
 
 /**
  * Function to update the scene of the entire game.
