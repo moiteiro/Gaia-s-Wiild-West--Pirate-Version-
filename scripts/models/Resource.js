@@ -2,16 +2,16 @@
 
 var Resource = klass({
 
-	type: "",  // nature, civilization, space
-
-	resourcesType: {
-		name: "savanna",			// documentar todos os tipos de biomas
+	// resourcesType
+	type: {
+		group: "nature",
+		name: "savanna",
 		nonWalkable: ['rock', 'rock1', 'tree', 'tree1', 'tree2'],
 		walkable: [],
 		terrain: ['grass1', 'grass2', 'grass3', 'grass4'],
 		subsoil: ['subsoil-grass1', 'subsoil-grass2', 'subsoil-grass3', 'subsoil-grass4'],
 		underground: ['underground-grass1'],
-		amount: 10					// total of resource that composes this environment
+		amount: 10
 	},
 
 	path: "",
@@ -39,14 +39,13 @@ var Resource = klass({
 	},
 
 	loadAllResources: function () {
-		var nonWalkable	= this.resourcesType.nonWalkable,
-			walkable	= this.resourcesType.walkable,
-			terrain		= this.resourcesType.terrain,
-			subsoil		= this.resourcesType.subsoil,
-			underground = this.resourcesType.underground,
+		var nonWalkable	= this.type.nonWalkable,
+			walkable	= this.type.walkable,
+			terrain		= this.type.terrain,
+			subsoil		= this.type.subsoil,
+			underground = this.type.underground,
 			length,
 			i;
-
 
 		length = nonWalkable.length;
 
@@ -83,7 +82,6 @@ var Resource = klass({
 			this.width = this.naturalWidth;
 			this.height = this.naturalHeight;
 			that.resourceLoaded();
-
 		}.bind(that);
 
 		image.src = this.path + name + ".png";

@@ -8,8 +8,8 @@ var BattleField = klass({
 	screenHeight: 0,
 	width: 10,					// amount of squares in X orientation
 	height: 10,					// amout of squres in Y orientation
-	maxSize: 10,				// max size for width and height
-	minSize: 10,				// min size for width and height
+	mapMaxSize: 18,				// max size for width and height
+	mapMinSize: 12,				// min size for width and height
 	offsetX: 430,				// to store de original values of the first Tile 0,0
 	offsetY: 150,				// to store de original values of the first Tile 0,0
 	translatedX: 0,				// store the move on x-axis
@@ -24,39 +24,37 @@ var BattleField = klass({
 	context: null,
 	resources: null,
 
-	// _tilehovered: {
-	// 	x: null,
-	// 	y: null,
-	// 	oldX: 0,
-	// 	oldY: 0
-	// },
-	
-	_JSONMapLoaded: false,
+	_tileSelected: {
+		x: 5,
+		y: 5,
+	},
 
 	frameCount: 0,
 
-	navLayer: "",  // layer that response to the mouse events
+	battlefieldLayer: null,
 
 	objectsPool: "",
 	tilesPool: "",
 
+	// DEBUG
+	_mapColorType: false,
+	_mapCartesianCoordinates: false,
+
 	initialize: function (configs) {
 		if (configs) {
 			Object.extend(this, configs);
-		}		
+		}
+
 
 		this.objectsPool = new EntityPool();
 		this.tilesPool = new TilePool();
 
-		this.navLayer = new Layer({zIndex: 4, isometric: true, name: "battlefield_nav"});
+		this.battlefieldLayer = new Layer({zIndex: 1, isometric: false, name: "battlefield"});
+		this.context = this.battlefieldLayer.getContext();
 
-		this.loadServerMap();
-		// this.generateArena();
-	},
-
-	loadServerMap: function () {
-		var URL = "/server-side-map.json";
-		getJSON(URL, this._setMap.bind(this));
+		this.debugMode(true);
+		this.generateArena();
+		utils.addListener(window, 'resize', this.forceRender.bind(this))
 	},
 
 	generateArena: function () {
@@ -81,18 +79,14 @@ var BattleField = klass({
 			}
 		}
 
-		this.generateRelief();
+		// this.generateRelief();
 		this.setNonWalkableTiles();
 		this.forceRender();
 	},
 
 	createMapDimensions: function () {
-
-		var maxSize = this.maxSize, // map max size
-			minSize = this.minSize, // map min size
-			terrain = this.resources.terrainElems,
-			terrainLength = this.resources.resourcesType.terrain.length,
-			terrainType,
+		var maxSize = this.mapMaxSize,
+			minSize = this.mapMinSize,
 			tile,
 			y,
 			x;
@@ -100,38 +94,50 @@ var BattleField = klass({
 		this.width = Math.floor(Math.random() * (maxSize - minSize + 1) + minSize);
 		this.height = Math.floor(Math.random() * (maxSize - minSize + 1) + minSize);
 
-		this.map = new Array(this.height);
 
-		this.tilesPool.reset();
-
-		// TODO: esse conteudo pode ser transferido para uma funcao "preenche tiles"
-		for (y = this.height - 1; y >= 0; y--) {
-			this.map[y] = new Array(this.height);
-			for (x = this.width - 1; x >= 0; x--) {
-
-				terrainType = Math.floor(Math.random() * terrainLength);
-
-				tile = {
-					x: x,
-					y: y,
-					elevation: 0,
-					type: 0,
-					terrain: terrainType,
-					subsoil: terrainType, // make this random like terrain
-					underground: 0,
-					scaledTileSize: this.scaledTileSize
-				};
-
-				this.map[y][x] = this.tilesPool.getTile();
-				this.map[y][x].extend(tile);
-			}
-		}
+		this._createMapArray();
 
 		this.offsetX = (this.screenWidth / 2) + (this.height - this.width) *  (this.scaledTileSize / 2);
 		this.offsetY = (this.screenHeight / 2) - ((this.scaledTileSize / 2 * this.height) + (this.width - this.height) * this.scaledTileSize / 4);
 
 		this.dx = this.offsetX + this.translatedX;
 		this.dy = this.offsetY + this.translatedY;
+	},
+
+		// setup the map array
+	_createMapArray: function () {
+		var terrainCount = this.resources.type.terrain.length;
+
+		this.tilesPool.reset();
+
+		this.map = new Array(this.height);
+		
+		for (y = this.height - 1; y >= 0; y--) {
+			this.map[y] = new Array(this.height);
+			for (x = this.width - 1; x >= 0; x--) {
+
+				this._createTile(x, y, terrainCount);
+
+			}
+		}
+	},
+
+	_createTile: function (x, y, terrainCount) {
+		var index = Math.floor(Math.random() * terrainCount);
+
+		var tile = {
+			x: x,
+			y: y,
+			elevation: 0,
+			type: 0,
+			terrain: this.resources.type.terrain[index],
+			subsoil: this.resources.type.subsoil[index],
+			underground: 'underground-grass1',
+			scaledTileSize: this.scaledTileSize
+		};
+
+		this.map[y][x] = this.tilesPool.getTile();
+		this.map[y][x].extend(tile);
 	},
 
 	/**
@@ -205,7 +211,6 @@ var BattleField = klass({
 		return neighborAmount;
 	},
 
-
 	/**
 	 * Returns a random x and y position of the battlefield.
 	 * @return {object} 
@@ -246,27 +251,29 @@ var BattleField = klass({
 			tile,
 			index,
 			object,
-			nonWalkable = this.resources.resourcesType.nonWalkable,
+			nonWalkable = this.resources.type.nonWalkable,
 			totalResources = nonWalkable.length,
 			resources = this.resources.elems,
-			amount = this.resources.resourcesType.amount;
+			amount = this.resources.type.amount;
 
 		this.objectsPool.reset();
 
-		// for (i =  amount - 1; i >= 0; i--) {
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+		// encapsular em uma funcao pois isso nao eh obrigatorio caso o mapa venha todo definido do servidor.
+		for (i =  amount - 1; i >= 0; i--) {
 
-		// 	index = Math.floor(Math.random() * totalResources);
-		// 	pos = this.getARandomMapPosition();
+			index = Math.floor(Math.random() * totalResources);
+			pos = this.getARandomMapPosition();
 
-		// 	object = this.objectsPool.getEntity();
-		// 	tile = this.map[pos.y][pos.x];
+			var object = this.objectsPool.getEntity();
+			tile = this.map[pos.y][pos.x];
 
-		// 	object.setImage(resources[nonWalkable[index]]);
-		// 	object.setCoordinates(pos.x, pos.y);
-		// 	object.calculate(this.dx, this.dy, this.scaledTileSize);
+			object.setImage(resources[nonWalkable[index]]);
+			object.setCoordinates(pos.x, pos.y);
+			object.calculate(this.dx, this.dy, this.scaledTileSize);
 
-		// 	tile.type = 5; // that is right!
-		// }
+			tile.type = 5; // that is right!
+		}
 
 		// this.setSpecialWalkableTiles();
 	},
@@ -291,68 +298,18 @@ var BattleField = klass({
 		}
 	},
 
-
-	generateRelief: function () {
-		// var x = Math.floor(Math.random() * this.width),
-		// 	y = Math.floor(Math.random() * this.height),
-		// 	maxElevation = 5,
-		// 	elevation;
-
-		// elevation = Math.floor(Math.acos(Math.random()) * 180 / Math.PI);
-		// elevation = Math.round(elevation * maxElevation / 90);
-		
-		// var elevation = 4
-		// var pos = 4;
-		// this.map[pos][pos].elevation = elevation;
-
-		// this.temp(this.map[pos][pos], 4);
-	},
-
-	temp: function (tile) {
-		var x, y,
-			elevation,
-			xBegin = (tile.x - 1) < 0 ? 0 : tile.x - 1,
-			xEnd = (tile.x + 1) > (this.width - 1) ? this.width - 1 : tile.x + 1,
-			yBegin = (tile.y - 1) < 0 ? 0 : tile.y - 1,
-			yEnd = (tile.y + 1) > (this.height - 2) ? this.height - 1 : tile.y + 1;
-
-		if (tile.elevation === 0)
-			return;
-
-		for (y = yBegin; y <= yEnd; y++) {
-			for(x = xBegin; x <= xEnd; x++) {
-				if (this.map[y][x] !== tile && this.map[y][x].elevation === 0) {
-
-					elevation = Math.abs(tile.elevation - (Math.floor(Math.random() * 3)));
-					console.log(elevation)
-					this.map[y][x].elevation = elevation;
-
-					if (this.map[y][x].elevation !== 0) {
-						this.temp(this.map[y][x]);
-					}
-				}
-			}
-		}
-
-		// console.log("x: " + x + " xEnd: " + xEnd + " y: " + y + " yEnd: " + yEnd);
-
-	},
-
 	/**
 	 * Place the resources images into the battleField
 	 * @return {void}
 	 */
 	renderStaticObjects: function () {
-		var amount = this.resources.resourcesType.amount,
+		var amount = this.resources.type.amount,
 			object,
 			i;
 
-
 		for (i = 0; i < amount; i++) {
 			object = this.objectsPool._entityPool[i];
-			// REMOVER ISSO DAQUI: Inserir dentro da funcao de criacao de montanhas a ser criada.
 			object.setElevationOffset(this.map[object.coordY][object.coordX].elevationOffset);
-
 			object.forceRender();
 		}
 	},
@@ -362,31 +319,174 @@ var BattleField = klass({
 	 * @return {[type]} [description]
 	 */
 	renderTerrain: function () {
-
-		var terrainNames = this.resources.resourcesType.terrain,
-			subsoilNames = this.resources.resourcesType.subsoil,
-			undergroundNames = this.resources.resourcesType.underground,
-			terrains = this.resources.terrainElems,
-			subsoils = this.resources.subsoilElems,
-			undergrounds = this.resources.undergroundElems,
-			width = this.width,
+		var width = this.width,
 			height = this.height,
-			map = this.map,
-			tile,
-			terrainTexture,
-			x,
-			y;
-		for (y = 0; y < height; y++) {
-			for (x = 0; x < width; x++) {
+			context = this.context;
 
-				tile = map[y][x];
-				terrainTexture = terrains[terrainNames[tile.terrain]];
-				subsoilTexture = subsoils[subsoilNames[tile.subsoil]];
-				undergroundTexture = undergrounds[undergroundNames[tile.underground]];
-				tile.render(terrainTexture, subsoilTexture, undergroundTexture, this.dx, this.dy);
-			}
-		}
+		this.battlefieldLayer.clear();
+		Tile.render(context, this.map, this.resources, this.tileSize, width, height, this.dx, this.dy);
+
+
+		this.battlefieldLayer.save();
+		this.battlefieldLayer.translate(this.dx, this.dy);
+		this.battlefieldLayer.isometricMode();
+
+		if (this._mapColorType)
+			Tile.renderColorType(context, this.map, this.tileSize, width, height);
+		if (this._mapCartesianCoordinates)
+			Tile.renderPositions(context, this.tileSize, width, height);
+
+		Tile.renderBorders(context, this.tileSize, width, height);
+		this.battlefieldLayer.restore();
+
 	},
+
+	render: function (frame) {
+		this.frameCount = frame;
+		if (this._forceRender) {
+			this.renderTerrain();
+			this.renderSelectedTile();
+			this.renderStaticObjects();
+		}
+		this._forceRender = false;
+	},
+
+	renderSelectedTile: function () {
+
+		this.battlefieldLayer.save();
+		this.battlefieldLayer.translate(this.dx, this.dy);
+		this.battlefieldLayer.isometricMode();
+
+		// I just need to do it once, because tha map will move, not the selected tile
+
+		Tile.renderSelectedPosition(this.context, this.tileSize, this._tileSelected.x, this._tileSelected.y, this.dx, this.dy)
+		
+		this.battlefieldLayer.restore();
+	},
+
+	forceRender: function () {
+		this._forceRender = true;
+	},
+
+	/**
+	 * Returns all coordinates of the map
+	 * @return {[type]} [description]
+	 */
+	getAttributes: function () {
+
+		return {
+			offsetX: this.offsetX,
+			offsetY: this.offsetY,
+			width: this.width,
+			height: this.height,
+			dx: this.dx,
+			dy: this.dy
+		};
+	},
+
+	over: function () {
+		// implemente o fim da batalha.
+	},
+
+	debugMode: function (status) {
+		this._mapColorType = status;
+		this._mapCartesianCoordinates = status;
+	},
+
+	/*
+	|---------------------------------------------------------------------
+	| Move Map
+	|---------------------------------------------------------------------
+	*/
+
+	moveDown: function () {
+		this.dy -= this.scaledTileSize;
+		this._tileSelected.y++;
+		this._tileSelected.x++;
+	},
+
+	moveUp: function () {
+		this.dy += this.scaledTileSize;
+		this._tileSelected.y--;
+		this._tileSelected.x--;
+	},
+
+	moveLeft: function () {
+		this.dx += this.scaledTileSize * 2;
+		this._tileSelected.y++;
+		this._tileSelected.x--;
+	},
+
+	moveRight: function () {
+		this.dx -= this.scaledTileSize * 2;
+		this._tileSelected.y--;
+		this._tileSelected.x++;
+	},
+
+	moveUpRight: function () {
+		this.dx -= this.scaledTileSize;
+		this.dy += this.scaledTileSize / 2;
+		this._tileSelected.y--;
+	},
+
+	moveUpLeft: function () {
+		this.dy += this.scaledTileSize / 2;
+		this.dx += this.scaledTileSize;
+		this._tileSelected.x--;
+	},
+
+	moveDownRight: function () {
+		this.dy -= this.scaledTileSize / 2;
+		this.dx -= this.scaledTileSize;
+		this._tileSelected.x++;
+	},
+
+	moveDownLeft: function () {
+		this.dy -= this.scaledTileSize / 2;
+		this.dx += this.scaledTileSize;
+		this._tileSelected.y++;
+	},
+
+	move: function (left, up, right, down) {
+		if (up && right) { this.moveUpRight(); return; }
+		if (up && left) { this.moveUpLeft(); return; }
+		if (down && right) { this.moveDownRight(); return; }
+		if (down && left) { this.moveDownLeft(); return; }
+		if (left) this.moveLeft();
+		if (up) this.moveUp();
+		if (right) this.moveRight();
+		if (down) this.moveDown();
+	},
+
+	getInput: function (input) {
+		this.move(input.left, input.up, input.right, input.down);
+		this.forceRender();
+	},
+
+	/**
+	 * Sets tiles that characters cannot walk.
+	 * This tiles can be used to place Resources.
+	 */
+	// _setNonWalkableTiles: function (y, x) {
+	// 	var index,
+	// 		object,
+	// 		nonWalkable = this.resources.resourcesType.nonWalkable,
+	// 		totalResources = nonWalkable.length,
+	// 		resources = this.resources.elems;
+
+	// 	index = Math.floor(Math.random() * totalResources);
+
+	// 	object = this.objectsPool.getEntity();
+
+	// 	object.setImage(resources[nonWalkable[index]]);
+	// 	object.setCoordinates(x, y);
+	// 	object.calculate(this.dx, this.dy, this.scaledTileSize);
+	// },
+
+	// loadServerMap: function () {
+	// 	var URL = "/server-side-map.json";
+	// 	getJSON(URL, this._setMap.bind(this));
+	// },
 
 	// TODO: verificar novo uso para essa funcao
 	/**
@@ -414,21 +514,6 @@ var BattleField = klass({
 	// 	}
 	// },
 
-
-	render: function (frame) {
-		this.frameCount = frame;
-
-		if (this._forceRender) {
-			this.renderTerrain();
-			this.renderStaticObjects();
-		}
-		this._forceRender = false;
-	},
-
-	forceRender: function () {
-		this._forceRender = true;
-	},
-
 	// setTileCursorHover: function (coord) {
 	// 	this._tilehovered.oldX = this._tilehovered.x;
 	// 	this._tilehovered.oldY = this._tilehovered.y;
@@ -436,87 +521,57 @@ var BattleField = klass({
 	// 	this._tilehovered.y = coord.y;
 	// },
 
-	/**
-	 * Returns all coordinates of the map
-	 * @return {[type]} [description]
-	 */
-	getAttributes: function () {
+	// generateRelief: function () {
+	// 	var x = Math.floor(Math.random() * this.width),
+	// 		y = Math.floor(Math.random() * this.height),
+	// 		maxElevation = 5,
+	// 		elevation;
 
-		return {
-			offsetX: this.offsetX,
-			offsetY: this.offsetY,
-			width: this.width,
-			height: this.height,
-			dx: this.dx,
-			dy: this.dy
-		};
-	},
+	// 	elevation = Math.floor(Math.acos(Math.random()) * 180 / Math.PI);
+	// 	elevation = Math.round(elevation * maxElevation / 90);
+		
+	// 	// var elevation = 4
+	// 	var pos = 4;
+	// 	// this.map[pos][pos].elevation = elevation;
 
-	over: function () {
-		// implemente o fim da batalha.
-	},
+	// 	this.temp(this.map[pos][pos]);
+	// },
 
+	// temp: function (tile) {
+	// 	var x, y,
+	// 		elevation,
+	// 		xBegin = (tile.x - 1) < 0 ? 0 : tile.x - 1,
+	// 		xEnd = (tile.x + 1) > (this.width - 1) ? this.width - 1 : tile.x + 1,
+	// 		yBegin = (tile.y - 1) < 0 ? 0 : tile.y - 1,
+	// 		yEnd = (tile.y + 1) > (this.height - 2) ? this.height - 1 : tile.y + 1;
 
-	_setMap: function (map) {
-		if (Array.isArray(map) && Array.isArray(map[0])) {
-			this.height = map.length;
-			this.width = map[0].length;
+	// 	if (tile.elevation === 0)
+	// 		return;
 
-			this.offsetX = (this.screenWidth / 2) + (this.height - this.width) *  (this.scaledTileSize / 2);
-			this.offsetY = (this.screenHeight / 2) - ((this.scaledTileSize / 2 * this.height) + (this.width - this.height) * this.scaledTileSize / 4);
+	// 	for (y = yBegin; y <= yEnd; y++) {
+	// 		for(x = xBegin; x <= xEnd; x++) {
+	// 			if (this.map[y][x] !== tile && this.map[y][x].elevation === 0) {
 
-			this.dx = this.offsetX + this.translatedX;
-			this.dy = this.offsetY + this.translatedY;
+	// 				elevation = Math.abs(tile.elevation - (Math.floor(Math.random() * 3)));
+	// 				console.log(elevation)
+	// 				this.map[y][x].elevation = elevation;
 
-			this._populateTiles(map);
-			this.setNonWalkableTiles();
-		}
-		this.forceRender();
-	},
+	// 				if (this.map[y][x].elevation !== 0) {
+	// 					this.temp(this.map[y][x]);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-	_populateTiles: function (map) {
-		this.objectsPool.reset();
-		this.tilesPool.reset();
-		this.map = [];
+	// 	// console.log("x: " + x + " xEnd: " + xEnd + " y: " + y + " yEnd: " + yEnd);
 
-		for (y = 0; y  < this.height; y++) {
+	// },
 
-			this.map[y] = [];
-
-			for (x = 0; x < this.width; x++) {
-
-				tile = map[y][x];
-
-				this.map[y][x] = this.tilesPool.getTile();
-				this.map[y][x].extend(tile);
-
-				if (this.map[y][x].type === 5 ) {
-					this._setNonWalkableTiles(y, x);
-				}
-			}
-		}
-	},
-
-
-	/**
-	 * Sets tiles that characters cannot walk.
-	 * This tiles can be used to place Resources.
-	 */
-	_setNonWalkableTiles: function (y, x) {
-		var index,
-			object,
-			nonWalkable = this.resources.resourcesType.nonWalkable,
-			totalResources = nonWalkable.length,
-			resources = this.resources.elems;
-
-		index = Math.floor(Math.random() * totalResources);
-
-		object = this.objectsPool.getEntity();
-
-		object.setImage(resources[nonWalkable[index]]);
-		object.setCoordinates(x, y);
-		object.calculate(this.dx, this.dy, this.scaledTileSize);
-	},
+	/*
+	|---------------------------------------------------------------------
+	| comment
+	|---------------------------------------------------------------------
+	*/
 
 	/*************************************
 		Custom Events

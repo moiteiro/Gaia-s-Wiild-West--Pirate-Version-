@@ -1,7 +1,7 @@
 /*globals canvas, document, window, klass, Entity */
 
 var EntityPool = klass({
-	totalEntities: 20,
+	totalEntities: 0,
 	_entityPool: [],
 	_entityIndex: 0,
 

@@ -14,7 +14,9 @@ var GWW = klass({
 	scaledTileSize: 63.639, // size of tile after the scale operation
 	loopFrameCount: 0,
 	totalFrames: 0,
-	msPerFrame: 16,
+	msPerFrame: 33,
+
+	msCaptureInput: 200, // how much seconds the game will capture an user input
 
 	gameController: "",
 	controls: "",
@@ -65,6 +67,8 @@ var GWW = klass({
 		var curState = this.gameController.getState();
 		var states = this._states;
 
+		var input = this.controls.capture();
+
 		switch (curState) {
 
 		case states.BATTLE_NEW:
@@ -95,14 +99,15 @@ var GWW = klass({
 			if (this.battleField.over()) {
 				this.gameController.set('BATTLE_END');
 			} else {
+				this.battleField.getInput(input);
 				this.battleField.render(this.loopFrameCount);
 			}
 			break;
 		}
 	},
 
-	render: function () {
-		this.update();	
+	gameLoop: function () {
+		this.update();
 	},
 
 	_setupBattleField: function () {
@@ -119,7 +124,6 @@ var GWW = klass({
 	_setupResources: function () {
 		this.resources = new Resource({
 			path: "assets/nature/savanna/",
-			type: "nature",
 			context: this.context
 		});
 	}
@@ -137,14 +141,15 @@ window.gww = new GWW();
 	var acDelta = 0;
 	var msPerFrame = gww.msPerFrame;
 
-	function render() {
-		requestAnimFrame(render);
-		gww.render();
+	function gameLoop() {
+		requestAnimFrame(gameLoop);
+		gww.gameLoop();
 
 		var delta = Date.now() - lastUpdateTime;
 		if (acDelta > msPerFrame) {
 			gww.totalFrames++;
 			gww.loopFrameCount++;
+
 			acDelta = 0;
 
 			if (gww.loopFrameCount >= 60) {
@@ -158,5 +163,5 @@ window.gww = new GWW();
 		lastUpdateTime = Date.now();
 	}
 
-	render();
+	gameLoop();
 }(gww));

@@ -150,6 +150,7 @@
 
 #consoleLeftMenu li.button:hover {
 	background: rgb(20, 20, 20);
+	cursor: url('/assets/UI/handcursor.cur'), url('/assets/UI/handcursor.png'), auto ;
 }
 
 #consoleLeftMenu .console-container li span.property-name {

@@ -14,15 +14,15 @@ require.config({
 
 		BattleField: 'models/BattleField',
 		GameController: 'models/GameController',
-		Layer: 'models/Layer',
 		Tile: 'models/Tile',
 		TilePool: 'models/TilePool',
 		Resource: 'models/Resource',
 		Entity: 'models/Entity',
 		EntityPool: 'models/EntityPool',
 
+		Controls: 'UI/Controls',
 		Screen: 'UI/Screen',
-		Controls: 'UI/Controls'
+		Layer: 'UI/Layer',
 	},
 
 	shim: {

@@ -26,7 +26,6 @@ var Entity = klass({
 		if (configs) {
 			Object.extend(this, configs);
 		}
-
 		this._canvas = document.createElement("canvas");
 		this._context = this._canvas.getContext('2d');
 		$('viewport').appendChild(this._canvas);
@@ -36,7 +35,6 @@ var Entity = klass({
 		this._image = img;
 		this._canvas.width = this._width = img.width;
 		this._canvas.height = this._height = img.height;
-
 	},
 
 	setCoordinates: function (x, y) {
@@ -90,7 +88,7 @@ var Entity = klass({
 
 		xMedPoint = dx + ((x - y) * step);
 		yMedPoint = dy + (step / 2) + (step * y) + (step / 2 * (x - y));
-
+		
 		this.posX = xMedPoint;
 		this.posY = yMedPoint;
 	}
