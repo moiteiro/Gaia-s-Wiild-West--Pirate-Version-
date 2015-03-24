@@ -49,14 +49,14 @@ var Controls = klass({
 	capture: function () {
 		var left, up, right, down;
 
-		if (this._command.moveLeft)
-			console.log('left +')
-		if (this._command.moveUp)
-			console.log('up +')
-		if (this._command.moveRight)
-			console.log('right +')
-		if (this._command.moveDown)
-			console.log('down +')
+		// if (this._command.moveLeft)
+		// 	console.log('left +')
+		// if (this._command.moveUp)
+		// 	console.log('up +')
+		// if (this._command.moveRight)
+		// 	console.log('right +')
+		// if (this._command.moveDown)
+		// 	console.log('down +')
 		return {
 			left: this._command.moveLeft,
 			up: this._command.moveUp,
