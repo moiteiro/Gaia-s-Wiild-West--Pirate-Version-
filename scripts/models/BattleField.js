@@ -24,14 +24,9 @@ var BattleField = klass({
 	context: null,
 	resources: null,
 
-	_tileSelected: {
-		x: 5,
-		y: 5,
-	},
-
 	frameCount: 0,
 
-	battlefieldLayer: null,
+	layer: null,
 
 	objectsPool: "",
 	tilesPool: "",
@@ -49,8 +44,8 @@ var BattleField = klass({
 		this.objectsPool = new EntityPool();
 		this.tilesPool = new TilePool();
 
-		this.battlefieldLayer = new Layer({zIndex: 1, isometric: false, name: "battlefield"});
-		this.context = this.battlefieldLayer.getContext();
+		this.layer = new Layer({zIndex: 1, isometric: false, name: "battlefield"});
+		this.context = this.layer.getContext();
 
 		this.debugMode(true);
 		this.generateArena();
@@ -310,6 +305,7 @@ var BattleField = klass({
 		for (i = 0; i < amount; i++) {
 			object = this.objectsPool._entityPool[i];
 			object.setElevationOffset(this.map[object.coordY][object.coordX].elevationOffset);
+			object.calculate(this.dx, this.dy, this.scaledTileSize);
 			object.forceRender();
 		}
 	},
@@ -323,13 +319,13 @@ var BattleField = klass({
 			height = this.height,
 			context = this.context;
 
-		this.battlefieldLayer.clear();
+		this.layer.clear();
 		Tile.render(context, this.map, this.resources, this.tileSize, width, height, this.dx, this.dy);
 
 
-		this.battlefieldLayer.save();
-		this.battlefieldLayer.translate(this.dx, this.dy);
-		this.battlefieldLayer.isometricMode();
+		this.layer.save();
+		this.layer.translate(this.dx, this.dy);
+		this.layer.isometricMode();
 
 		if (this._mapColorType)
 			Tile.renderColorType(context, this.map, this.tileSize, width, height);
@@ -337,7 +333,7 @@ var BattleField = klass({
 			Tile.renderPositions(context, this.tileSize, width, height);
 
 		Tile.renderBorders(context, this.tileSize, width, height);
-		this.battlefieldLayer.restore();
+		this.layer.restore();
 
 	},
 
@@ -345,23 +341,9 @@ var BattleField = klass({
 		this.frameCount = frame;
 		if (this._forceRender) {
 			this.renderTerrain();
-			this.renderSelectedTile();
 			this.renderStaticObjects();
 		}
 		this._forceRender = false;
-	},
-
-	renderSelectedTile: function () {
-
-		this.battlefieldLayer.save();
-		this.battlefieldLayer.translate(this.dx, this.dy);
-		this.battlefieldLayer.isometricMode();
-
-		// I just need to do it once, because tha map will move, not the selected tile
-
-		Tile.renderSelectedPosition(this.context, this.tileSize, this._tileSelected.x, this._tileSelected.y, this.dx, this.dy)
-		
-		this.battlefieldLayer.restore();
 	},
 
 	forceRender: function () {
@@ -380,7 +362,8 @@ var BattleField = klass({
 			width: this.width,
 			height: this.height,
 			dx: this.dx,
-			dy: this.dy
+			dy: this.dy,
+			map: this.map
 		};
 	},
 
@@ -392,76 +375,14 @@ var BattleField = klass({
 		this._mapColorType = status;
 		this._mapCartesianCoordinates = status;
 	},
-
-	/*
-	|---------------------------------------------------------------------
-	| Move Map
-	|---------------------------------------------------------------------
-	*/
-
-	moveDown: function () {
-		this.dy -= this.scaledTileSize;
-		this._tileSelected.y++;
-		this._tileSelected.x++;
-	},
-
-	moveUp: function () {
-		this.dy += this.scaledTileSize;
-		this._tileSelected.y--;
-		this._tileSelected.x--;
-	},
-
-	moveLeft: function () {
-		this.dx += this.scaledTileSize * 2;
-		this._tileSelected.y++;
-		this._tileSelected.x--;
-	},
-
-	moveRight: function () {
-		this.dx -= this.scaledTileSize * 2;
-		this._tileSelected.y--;
-		this._tileSelected.x++;
-	},
-
-	moveUpRight: function () {
-		this.dx -= this.scaledTileSize;
-		this.dy += this.scaledTileSize / 2;
-		this._tileSelected.y--;
-	},
-
-	moveUpLeft: function () {
-		this.dy += this.scaledTileSize / 2;
-		this.dx += this.scaledTileSize;
-		this._tileSelected.x--;
-	},
-
-	moveDownRight: function () {
-		this.dy -= this.scaledTileSize / 2;
-		this.dx -= this.scaledTileSize;
-		this._tileSelected.x++;
-	},
-
-	moveDownLeft: function () {
-		this.dy -= this.scaledTileSize / 2;
-		this.dx += this.scaledTileSize;
-		this._tileSelected.y++;
-	},
-
-	move: function (left, up, right, down) {
-		if (up && right) { this.moveUpRight(); return; }
-		if (up && left) { this.moveUpLeft(); return; }
-		if (down && right) { this.moveDownRight(); return; }
-		if (down && left) { this.moveDownLeft(); return; }
-		if (left) this.moveLeft();
-		if (up) this.moveUp();
-		if (right) this.moveRight();
-		if (down) this.moveDown();
-	},
-
-	getInput: function (input) {
-		this.move(input.left, input.up, input.right, input.down);
-		this.forceRender();
-	},
+	
+	setMapShift: function (shift) {
+		if (this.dx != shift.dx || this.dy != shift.dy) {
+			this.dx = shift.dx;
+			this.dy = shift.dy;
+			this.forceRender();
+		}
+	}
 
 	/**
 	 * Sets tiles that characters cannot walk.
