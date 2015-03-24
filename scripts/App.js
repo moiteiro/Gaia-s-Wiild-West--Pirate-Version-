@@ -13,16 +13,14 @@ var GWW = klass({
 	tileSize: 90,           // size of each square
 	scaledTileSize: 63.639, // size of tile after the scale operation
 	loopFrameCount: 0,
-	totalFrames: 0,
-	msPerFrame: 33,
-
-	msCaptureInput: 200, // how much seconds the game will capture an user input
+	msPerFrame: 16,
 
 	gameController: "",
 	controls: "",
 	HUD: "",
 	debugHUD: "",
 	progression: "",
+	actionGrid: "",
 	battleField: "",
 	resources: "",
 	map: "",
@@ -86,6 +84,7 @@ var GWW = klass({
 			// this is the time for loading bar!!!
 			if (this.resources.isReady()) {
 				this._setupBattleField();
+				this._setupActionGrid(this.battleField.getAttributes());
 				this.controls.setBattleFieldAttributes(this.battleField.getAttributes());
 				this.gameController.setState('BATTLE_LOADED')
 			}
@@ -99,7 +98,9 @@ var GWW = klass({
 			if (this.battleField.over()) {
 				this.gameController.set('BATTLE_END');
 			} else {
-				this.battleField.getInput(input);
+				this.actionGrid.getInput(input);
+				this.actionGrid.render(this.loopFrameCount);
+				this.battleField.setMapShift(this.actionGrid.getMapShift());
 				this.battleField.render(this.loopFrameCount);
 			}
 			break;
@@ -108,6 +109,10 @@ var GWW = klass({
 
 	gameLoop: function () {
 		this.update();
+	},
+
+	_setupActionGrid: function (attr) {
+		this.actionGrid = new ActionGrid(attr);	
 	},
 
 	_setupBattleField: function () {
@@ -147,7 +152,6 @@ window.gww = new GWW();
 
 		var delta = Date.now() - lastUpdateTime;
 		if (acDelta > msPerFrame) {
-			gww.totalFrames++;
 			gww.loopFrameCount++;
 
 			acDelta = 0;

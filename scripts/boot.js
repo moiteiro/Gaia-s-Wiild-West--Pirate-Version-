@@ -12,6 +12,7 @@ require.config({
 		Legacy: 'libs/legacy',
 		Request: 'libs/request',
 
+		ActionGrid: 'models/ActionGrid',
 		BattleField: 'models/BattleField',
 		GameController: 'models/GameController',
 		Tile: 'models/Tile',
@@ -38,11 +39,12 @@ require.config({
 		'TilePool': ['Tile'],
 		'Resource': ['Core', 'Events', 'Legacy'],
 		'BattleField': ['Resource'],
+		ActionGrid: ['BattleField'],
 		'App': ['BattleField']
 	}
 
 });
 
-define(['App', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'TilePool', 'Request', 'Resource', 'Screen' /*'jQuery'*/], function () {
+define(['App', 'ActionGrid', 'BattleField', 'Core', 'Controls', 'Entity', 'EntityPool', 'Events', 'GameController', 'Legacy', 'Layer', 'Tile', 'TilePool', 'Request', 'Resource', 'Screen' /*'jQuery'*/], function () {
 
 });
